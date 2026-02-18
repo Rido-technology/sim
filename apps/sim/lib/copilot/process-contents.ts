@@ -5,7 +5,7 @@ import { and, eq, isNull } from 'drizzle-orm'
 import { loadWorkflowFromNormalizedTables } from '@/lib/workflows/persistence/utils'
 import { sanitizeForCopilot } from '@/lib/workflows/sanitization/json-sanitizer'
 import { isHiddenFromDisplay } from '@/blocks/types'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/lib/permission-groups/server-utils'
 import { escapeRegExp } from '@/executor/constants'
 import type { ChatContext } from '@/stores/panel/copilot/types'
 

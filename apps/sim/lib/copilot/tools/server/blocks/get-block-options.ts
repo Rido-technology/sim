@@ -7,7 +7,7 @@ import {
   type GetBlockOptionsResultType,
 } from '@/lib/copilot/tools/shared/schemas'
 import { registry as blockRegistry, getLatestBlock } from '@/blocks/registry'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/lib/permission-groups/server-utils'
 import { tools as toolsRegistry } from '@/tools/registry'
 
 export const getBlockOptionsServerTool: BaseServerTool<

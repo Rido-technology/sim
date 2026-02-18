@@ -8,7 +8,7 @@ import {
 } from '@/lib/copilot/tools/shared/schemas'
 import { registry as blockRegistry, getLatestBlock } from '@/blocks/registry'
 import { isHiddenFromDisplay, type SubBlockConfig } from '@/blocks/types'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/lib/permission-groups/server-utils'
 import { PROVIDER_DEFINITIONS } from '@/providers/models'
 import { tools as toolsRegistry } from '@/tools/registry'
 import { getTrigger, isTriggerValid } from '@/triggers'

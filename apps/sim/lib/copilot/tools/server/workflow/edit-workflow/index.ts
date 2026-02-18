@@ -11,7 +11,7 @@ import {
 } from '@/lib/workflows/persistence/utils'
 import { validateWorkflowState } from '@/lib/workflows/sanitization/validation'
 import { authorizeWorkflowByWorkspacePermission } from '@/lib/workflows/utils'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/lib/permission-groups/server-utils'
 import { generateLoopBlocks, generateParallelBlocks } from '@/stores/workflows/workflow/utils'
 import { applyOperationsToWorkflowState } from './engine'
 import type { EditWorkflowParams, ValidationError } from './types'

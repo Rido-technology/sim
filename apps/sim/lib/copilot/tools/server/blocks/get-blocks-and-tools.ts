@@ -3,7 +3,7 @@ import type { BaseServerTool } from '@/lib/copilot/tools/server/base-tool'
 import { GetBlocksAndToolsInput, GetBlocksAndToolsResult } from '@/lib/copilot/tools/shared/schemas'
 import { registry as blockRegistry } from '@/blocks/registry'
 import type { BlockConfig } from '@/blocks/types'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/lib/permission-groups/server-utils'
 
 export const getBlocksAndToolsServerTool: BaseServerTool<
   ReturnType<typeof GetBlocksAndToolsInput.parse>,

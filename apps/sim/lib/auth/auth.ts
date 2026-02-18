@@ -28,6 +28,7 @@ import { authorizeSubscriptionReference } from '@/lib/billing/authorization'
 import { handleNewUser } from '@/lib/billing/core/usage'
 import {
   ensureOrganizationForTeamSubscription,
+  ensureOrganizationForUser,
   syncSubscriptionUsageLimits,
 } from '@/lib/billing/organization'
 import { getPlans, resolvePlanFromStripeSubscription } from '@/lib/billing/plans'
@@ -118,6 +119,24 @@ export const auth = betterAuth({
               userId: user.id,
               error,
             })
+          }
+
+          if (isOrganizationsEnabled) {
+            try {
+              const result = await ensureOrganizationForUser(user.id, {
+                organizationName: user.name || undefined,
+              })
+              logger.info('[databaseHooks.user.create.after] Ensured organization for user', {
+                userId: user.id,
+                organizationId: result.organizationId,
+                created: result.created,
+              })
+            } catch (error) {
+              logger.error('[databaseHooks.user.create.after] Failed to ensure organization', {
+                userId: user.id,
+                error,
+              })
+            }
           }
 
           if (isHosted && user.email && user.emailVerified) {
