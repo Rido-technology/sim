@@ -6,7 +6,7 @@ import { getAllowedIntegrationsFromEnv } from '@/lib/core/config/feature-flags'
 import { loadWorkflowFromNormalizedTables } from '@/lib/workflows/persistence/utils'
 import { sanitizeForCopilot } from '@/lib/workflows/sanitization/json-sanitizer'
 import { isHiddenFromDisplay } from '@/blocks/types'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/extra/permissions/utils/access-check'
 import { escapeRegExp } from '@/executor/constants'
 import type { ChatContext } from '@/stores/panel/copilot/types'
 

@@ -1,51 +1,55 @@
 import type { Metadata } from 'next'
 import { getBaseUrl } from '@/lib/core/utils/urls'
-import { getBrandConfig } from '@/ee/whitelabeling/branding'
+import { getBrandConfig } from '@/extra/branding/config'
+
+const APP_DESCRIPTION_SHORT =
+  'Sim is an open-source AI agent workflow builder for production workflows.'
+
+const APP_DESCRIPTION_FULL =
+  'Sim is an open-source AI agent workflow builder. Developers at trail-blazing startups to Fortune 500 companies deploy agentic workflows on the Sim platform. 60,000+ developers already use Sim to build and deploy AI agent workflows and connect them to 100+ apps. Sim is SOC2 and HIPAA compliant, ensuring enterprise-grade security for AI automation.'
+
+const APP_KEYWORDS = [
+  'AI agent',
+  'AI agent builder',
+  'AI agent workflow',
+  'AI workflow automation',
+  'visual workflow editor',
+  'AI agents',
+  'workflow canvas',
+  'intelligent automation',
+  'AI tools',
+  'workflow designer',
+  'artificial intelligence',
+  'business automation',
+  'AI agent workflows',
+  'visual programming',
+]
 
 /**
- * Generate dynamic metadata based on brand configuration
+ * Generates Next.js Metadata based on the active brand configuration.
+ * Accepts an optional partial override to customise per-page metadata.
  */
 export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metadata {
   const brand = getBrandConfig()
-
-  const defaultTitle = brand.name
-  const summaryFull = `Sim is an open-source AI agent workflow builder. Developers at trail-blazing startups to Fortune 500 companies deploy agentic workflows on the Sim platform. 60,000+ developers already use Sim to build and deploy AI agent workflows and connect them to 100+ apps. Sim is SOC2 and HIPAA compliant, ensuring enterprise-grade security for AI automation.`
-  const summaryShort = `Sim is an open-source AI agent workflow builder for production workflows.`
+  const baseUrl = getBaseUrl()
 
   return {
     title: {
       template: `%s | ${brand.name}`,
-      default: defaultTitle,
+      default: brand.name,
     },
-    description: summaryShort,
+    description: APP_DESCRIPTION_SHORT,
     applicationName: brand.name,
     authors: [{ name: brand.name }],
     generator: 'Next.js',
-    keywords: [
-      'AI agent',
-      'AI agent builder',
-      'AI agent workflow',
-      'AI workflow automation',
-      'visual workflow editor',
-      'AI agents',
-      'workflow canvas',
-      'intelligent automation',
-      'AI tools',
-      'workflow designer',
-      'artificial intelligence',
-      'business automation',
-      'AI agent workflows',
-      'visual programming',
-    ],
+    keywords: APP_KEYWORDS,
     referrer: 'origin-when-cross-origin',
     creator: brand.name,
     publisher: brand.name,
-    metadataBase: new URL(getBaseUrl()),
+    metadataBase: new URL(baseUrl),
     alternates: {
       canonical: '/',
-      languages: {
-        'en-US': '/',
-      },
+      languages: { 'en-US': '/' },
     },
     robots: {
       index: true,
@@ -61,9 +65,9 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: getBaseUrl(),
-      title: defaultTitle,
-      description: summaryFull,
+      url: baseUrl,
+      title: brand.name,
+      description: APP_DESCRIPTION_FULL,
       siteName: brand.name,
       images: [
         {
@@ -76,8 +80,8 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
     },
     twitter: {
       card: 'summary_large_image',
-      title: defaultTitle,
-      description: summaryFull,
+      title: brand.name,
+      description: APP_DESCRIPTION_FULL,
       images: [brand.logoUrl || '/logo/426-240/primary/small.png'],
       creator: '@simdotai',
       site: '@simdotai',
@@ -87,16 +91,8 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
       icon: [
         { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
         { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        {
-          url: '/favicon/favicon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          url: '/favicon/favicon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-        },
+        { url: '/favicon/favicon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/favicon/favicon-512x512.png', sizes: '512x512', type: 'image/png' },
         { url: brand.faviconUrl || '/sim.png', sizes: 'any', type: 'image/png' },
       ],
       apple: '/favicon/apple-touch-icon.png',
@@ -107,14 +103,12 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
       statusBarStyle: 'default',
       title: brand.name,
     },
-    formatDetection: {
-      telephone: false,
-    },
+    formatDetection: { telephone: false },
     category: 'technology',
     other: {
       'apple-mobile-web-app-capable': 'yes',
       'mobile-web-app-capable': 'yes',
-      'msapplication-TileColor': '#701FFC', // Default Sim brand primary color
+      'msapplication-TileColor': '#701FFC',
       'msapplication-config': '/favicon/browserconfig.xml',
     },
     ...override,
@@ -122,7 +116,7 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
 }
 
 /**
- * Generate static structured data for SEO
+ * Returns static JSON-LD structured data for SEO.
  */
 export function generateStructuredData() {
   return {
@@ -137,15 +131,8 @@ export function generateStructuredData() {
     applicationSubCategory: 'AIWorkflowAutomation',
     areaServed: 'Worldwide',
     availableLanguage: ['en'],
-    offers: {
-      '@type': 'Offer',
-      category: 'SaaS',
-    },
-    creator: {
-      '@type': 'Organization',
-      name: 'Sim',
-      url: 'https://sim.ai',
-    },
+    offers: { '@type': 'Offer', category: 'SaaS' },
+    creator: { '@type': 'Organization', name: 'Sim', url: 'https://sim.ai' },
     featureList: [
       'Visual AI Agent Builder',
       'Workflow Canvas Interface',

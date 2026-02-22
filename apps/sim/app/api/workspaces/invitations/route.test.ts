@@ -104,7 +104,7 @@ describe('Workspace Invitations API Route', () => {
       inArray: vi.fn().mockImplementation((field, values) => ({ type: 'inArray', field, values })),
     }))
 
-    vi.doMock('@/ee/access-control/utils/permission-check', () => ({
+    vi.doMock('@/extra/permissions/utils/access-check', () => ({
       validateInvitationsAllowed: vi.fn().mockResolvedValue(undefined),
       InvitationsNotAllowedError: class InvitationsNotAllowedError extends Error {
         constructor() {

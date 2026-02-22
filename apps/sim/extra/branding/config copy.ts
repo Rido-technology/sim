@@ -3,7 +3,10 @@ import { getEnv } from '@/lib/core/config/env'
 
 export type { BrandConfig, ThemeColors }
 
-const getThemeColors = (): ThemeColors => {
+/**
+ * Resolves theme color values from environment variables with fallback to defaults.
+ */
+function resolveThemeColors(): ThemeColors {
   return {
     primaryColor:
       getEnv('NEXT_PUBLIC_BRAND_PRIMARY_COLOR') || defaultBrandConfig.theme?.primaryColor,
@@ -19,10 +22,10 @@ const getThemeColors = (): ThemeColors => {
 }
 
 /**
- * Get branding configuration from environment variables
- * Supports runtime configuration via Docker/Kubernetes
+ * Builds the full brand configuration from environment variables.
+ * Falls back to default brand config for any missing values.
  */
-export const getBrandConfig = (): BrandConfig => {
+function buildBrandConfig(): BrandConfig {
   return {
     name: getEnv('NEXT_PUBLIC_BRAND_NAME') || defaultBrandConfig.name,
     logoUrl: getEnv('NEXT_PUBLIC_BRAND_LOGO_URL') || defaultBrandConfig.logoUrl,
@@ -33,13 +36,16 @@ export const getBrandConfig = (): BrandConfig => {
       getEnv('NEXT_PUBLIC_DOCUMENTATION_URL') || defaultBrandConfig.documentationUrl,
     termsUrl: getEnv('NEXT_PUBLIC_TERMS_URL') || defaultBrandConfig.termsUrl,
     privacyUrl: getEnv('NEXT_PUBLIC_PRIVACY_URL') || defaultBrandConfig.privacyUrl,
-    theme: getThemeColors(),
+    theme: resolveThemeColors(),
   }
 }
 
 /**
- * Hook to use brand configuration in React components
+ * Returns the active brand configuration derived from environment variables.
  */
-export const useBrandConfig = () => {
-  return getBrandConfig()
-}
+export const getBrandConfig = (): BrandConfig => buildBrandConfig()
+
+/**
+ * React hook to access brand configuration inside components.
+ */
+export const useBrandConfig = () => getBrandConfig()

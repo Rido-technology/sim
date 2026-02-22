@@ -10,7 +10,7 @@ import { GithubIcon } from '@/components/icons'
 import { isHosted } from '@/lib/core/config/feature-flags'
 import { soehne } from '@/app/_styles/fonts/soehne/soehne'
 import { getFormattedGitHubStars } from '@/app/(landing)/actions/github'
-import { useBrandConfig } from '@/ee/whitelabeling'
+import { useBrandConfig } from '@/extra/branding'
 import { useBrandedButtonClass } from '@/hooks/use-branded-button-class'
 
 const logger = createLogger('nav')

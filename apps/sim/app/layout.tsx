@@ -7,7 +7,7 @@ import {
   generateBrandedMetadata,
   generateStructuredData,
   generateThemeCSS,
-} from '@/ee/whitelabeling'
+} from '@/extra/branding'
 import '@/app/_styles/globals.css'
 import { OneDollarStats } from '@/components/analytics/onedollarstats'
 import { isReactGrabEnabled, isReactScanEnabled } from '@/lib/core/config/feature-flags'

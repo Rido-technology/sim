@@ -16,7 +16,7 @@ import {
 import type { ExecutionContext } from '@/executor/types'
 import { getProviderFromModel } from '@/providers/utils'
 
-const logger = createLogger('PermissionCheck')
+const logger = createLogger('AccessCheck')
 
 export class ProviderNotAllowedError extends Error {
   constructor(providerId: string, model: string) {

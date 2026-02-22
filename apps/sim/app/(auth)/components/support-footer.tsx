@@ -1,7 +1,7 @@
 'use client'
 
 import { inter } from '@/app/_styles/fonts/inter/inter'
-import { useBrandConfig } from '@/ee/whitelabeling'
+import { useBrandConfig } from '@/extra/branding'
 
 export interface SupportFooterProps {
   /** Position style - 'fixed' for pages without AuthLayout, 'absolute' for pages with AuthLayout */

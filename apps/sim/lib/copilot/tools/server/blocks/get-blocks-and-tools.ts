@@ -4,7 +4,7 @@ import { GetBlocksAndToolsInput, GetBlocksAndToolsResult } from '@/lib/copilot/t
 import { getAllowedIntegrationsFromEnv } from '@/lib/core/config/feature-flags'
 import { registry as blockRegistry } from '@/blocks/registry'
 import type { BlockConfig } from '@/blocks/types'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/extra/permissions/utils/access-check'
 
 export const getBlocksAndToolsServerTool: BaseServerTool<
   ReturnType<typeof GetBlocksAndToolsInput.parse>,

@@ -4,17 +4,14 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { organizationKeys } from '@/hooks/queries/organization'
 
 /**
- * Query key factories for SSO-related queries
+ * Query key factories for SSO provider queries.
  */
 export const ssoKeys = {
   all: ['sso'] as const,
   providers: () => [...ssoKeys.all, 'providers'] as const,
 }
 
-/**
- * Fetch SSO providers
- */
-async function fetchSSOProviders() {
+async function loadSSOProviders() {
   const response = await fetch('/api/auth/sso/providers')
   if (!response.ok) {
     throw new Error('Failed to fetch SSO providers')
@@ -23,20 +20,17 @@ async function fetchSSOProviders() {
 }
 
 /**
- * Hook to fetch SSO providers
+ * Fetches the list of configured SSO providers.
  */
 export function useSSOProviders() {
   return useQuery({
     queryKey: ssoKeys.providers(),
-    queryFn: fetchSSOProviders,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: loadSSOProviders,
+    staleTime: 5 * 60 * 1000,
     placeholderData: keepPreviousData,
   })
 }
 
-/**
- * Configure SSO provider mutation
- */
 interface ConfigureSSOParams {
   provider: string
   domain: string
@@ -45,6 +39,9 @@ interface ConfigureSSOParams {
   orgId?: string
 }
 
+/**
+ * Mutation to register or update an SSO provider configuration.
+ */
 export function useConfigureSSO() {
   const queryClient = useQueryClient()
 
@@ -67,12 +64,8 @@ export function useConfigureSSO() {
       queryClient.invalidateQueries({ queryKey: ssoKeys.providers() })
 
       if (variables.orgId) {
-        queryClient.invalidateQueries({
-          queryKey: organizationKeys.detail(variables.orgId),
-        })
-        queryClient.invalidateQueries({
-          queryKey: organizationKeys.lists(),
-        })
+        queryClient.invalidateQueries({ queryKey: organizationKeys.detail(variables.orgId) })
+        queryClient.invalidateQueries({ queryKey: organizationKeys.lists() })
       }
     },
   })

@@ -11,8 +11,8 @@ import { isBillingEnabled } from '@/lib/core/config/feature-flags'
 import { cn } from '@/lib/core/utils/cn'
 import { getBaseUrl } from '@/lib/core/utils/urls'
 import { getUserRole } from '@/lib/workspaces/organization/utils'
-import { SSO_TRUSTED_PROVIDERS } from '@/ee/sso/constants'
-import { useConfigureSSO, useSSOProviders } from '@/ee/sso/hooks/sso'
+import { SSO_TRUSTED_PROVIDERS } from '@/extra/sso/providers'
+import { useConfigureSSO, useSSOProviders } from '@/extra/sso/hooks'
 import { useOrganizations } from '@/hooks/queries/organization'
 import { useSubscriptionData } from '@/hooks/queries/subscription'
 
@@ -47,7 +47,7 @@ const DEFAULT_FORM_DATA = {
   showAdvanced: false,
 }
 
-const DEFAULT_ERRORS = {
+const DEFAULT_ERRORS: Record<string, string[]> = {
   providerType: [],
   providerId: [],
   issuerUrl: [],
@@ -78,7 +78,6 @@ export function SSO() {
   const isAdmin = userRole === 'admin'
   const canManageSSO = isOwner || isAdmin
   const subscriptionStatus = getSubscriptionStatus(subscriptionData?.data)
-  const hasEnterprisePlan = subscriptionStatus.isEnterprise
 
   const isSSOProviderOwner =
     !isBillingEnabled && userId ? providers.some((p: any) => p.userId === userId) : null
@@ -89,7 +88,6 @@ export function SSO() {
   const [showClientSecret, setShowClientSecret] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA)
   const [errors, setErrors] = useState<Record<string, string[]>>(DEFAULT_ERRORS)
   const [showErrors, setShowErrors] = useState(false)
@@ -103,13 +101,6 @@ export function SSO() {
       )
     }
 
-    if (!hasEnterprisePlan) {
-      return (
-        <div className='flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]'>
-          Single Sign-On is available on Enterprise plans only.
-        </div>
-      )
-    }
 
     if (!canManageSSO) {
       return (
@@ -135,37 +126,37 @@ export function SSO() {
   }
 
   const validateIssuerUrl = (value: string): string[] => {
-    const out: string[] = []
     if (!value || !value.trim()) return ['Issuer URL is required.']
     try {
       const url = new URL(value.trim())
       const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
       if (url.protocol !== 'https:' && !isLocalhost) {
-        out.push('Issuer URL must use HTTPS.')
+        return ['Issuer URL must use HTTPS.']
       }
     } catch {
-      out.push('Enter a valid issuer URL like https://your-identity-provider.com/oauth2/default')
+      return ['Enter a valid issuer URL like https://your-identity-provider.com/oauth2/default']
     }
-    return out
+    return []
   }
 
   const validateDomain = (value: string): string[] => {
-    const out: string[] = []
     if (!value || !value.trim()) return ['Domain is required.']
-    if (/^https?:\/\//i.test(value.trim())) out.push('Do not include protocol (https://).')
-    if (!/^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value.trim()))
-      out.push('Enter a valid domain like your-domain.identityprovider.com')
+    const trimmed = value.trim()
+    const out: string[] = []
+    if (/^https?:\/\//i.test(trimmed)) out.push('Do not include protocol (https://).')
+    if (!/^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(trimmed))
+      out.push('Enter the email domain of your users, e.g. yourcompany.com')
     return out
   }
 
   const validateRequired = (label: string, value: string): string[] => {
-    const out: string[] = []
-    if (!value || !value.trim()) out.push(`${label} is required.`)
-    return out
+    if (!value || !value.trim()) return [`${label} is required.`]
+    return []
   }
 
-  const validateAll = (data: typeof formData) => {
-    const newErrors: Record<string, string[]> = {
+  const runValidation = (data: typeof formData) => {
+    const providerType = data.providerType || 'oidc'
+    const next: Record<string, string[]> = {
       providerType: [],
       providerId: validateProviderId(data.providerId),
       issuerUrl: validateIssuerUrl(data.issuerUrl),
@@ -179,48 +170,43 @@ export function SSO() {
       audience: [],
     }
 
-    const providerType = data.providerType || 'oidc'
-
     if (providerType === 'oidc') {
-      newErrors.clientId = validateRequired('Client ID', data.clientId)
-      newErrors.clientSecret = validateRequired('Client Secret', data.clientSecret)
-      if (!data.scopes || !data.scopes.trim()) {
-        newErrors.scopes = ['Scopes are required for OIDC providers']
-      }
+      next.clientId = validateRequired('Client ID', data.clientId)
+      next.clientSecret = validateRequired('Client Secret', data.clientSecret)
+      if (!data.scopes?.trim()) next.scopes = ['Scopes are required for OIDC providers']
     } else if (providerType === 'saml') {
-      newErrors.entryPoint = validateIssuerUrl(data.entryPoint || '')
-      if (!newErrors.entryPoint.length && !data.entryPoint) {
-        newErrors.entryPoint = ['Entry Point URL is required for SAML providers']
-      }
-      newErrors.cert = validateRequired('Certificate', data.cert)
+      next.entryPoint = validateIssuerUrl(data.entryPoint || '')
+      if (!next.entryPoint.length && !data.entryPoint)
+        next.entryPoint = ['Entry Point URL is required for SAML providers']
+      next.cert = validateRequired('Certificate', data.cert)
     }
 
-    setErrors(newErrors)
-    return newErrors
+    setErrors(next)
+    return next
   }
 
   const hasAnyErrors = (errs: Record<string, string[]>) =>
     Object.values(errs).some((l) => l.length > 0)
 
   const isFormValid = () => {
-    const requiredFields = ['providerId', 'issuerUrl', 'domain']
-    const hasRequiredFields = requiredFields.every((field) => {
-      const value = formData[field as keyof typeof formData]
-      return typeof value === 'string' && value.trim() !== ''
+    const allFilled = ['providerId', 'issuerUrl', 'domain'].every((f) => {
+      const v = formData[f as keyof typeof formData]
+      return typeof v === 'string' && v.trim() !== ''
     })
 
     const providerType = formData.providerType || 'oidc'
 
     if (providerType === 'oidc') {
       return (
-        hasRequiredFields &&
+        allFilled &&
         formData.clientId.trim() !== '' &&
         formData.clientSecret.trim() !== '' &&
         formData.scopes.trim() !== ''
       )
     }
+
     if (providerType === 'saml') {
-      return hasRequiredFields && formData.entryPoint.trim() !== '' && formData.cert.trim() !== ''
+      return allFilled && formData.entryPoint.trim() !== '' && formData.cert.trim() !== ''
     }
 
     return false
@@ -229,12 +215,10 @@ export function SSO() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-
     setShowErrors(true)
-    const validation = validateAll(formData)
-    if (hasAnyErrors(validation)) {
-      return
-    }
+
+    const validation = runValidation(formData)
+    if (hasAnyErrors(validation)) return
 
     try {
       const providerType = formData.providerType || 'oidc'
@@ -245,12 +229,7 @@ export function SSO() {
         domain: formData.domain,
         providerType,
         orgId: activeOrganization?.id,
-        mapping: {
-          id: 'sub',
-          email: 'email',
-          name: 'name',
-          image: 'picture',
-        },
+        mapping: { id: 'sub', email: 'email', name: 'name', image: 'picture' },
       }
 
       if (providerType === 'oidc') {
@@ -264,7 +243,6 @@ export function SSO() {
         if (formData.callbackUrl) requestBody.callbackUrl = formData.callbackUrl
         if (formData.audience) requestBody.audience = formData.audience
         if (formData.idpMetadata) requestBody.idpMetadata = formData.idpMetadata
-
         requestBody.mapping = {
           id: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
           email: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
@@ -289,20 +267,13 @@ export function SSO() {
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => {
-      let processedValue: any = value
-
+      let processed: any = value
       if (field === 'wantAssertionsSigned' || field === 'showAdvanced') {
-        processedValue = value === 'true'
+        processed = value === 'true'
       }
-
-      const next = { ...prev, [field]: processedValue }
-
-      if (field === 'providerType') {
-        setShowErrors(false)
-      }
-
-      validateAll(next)
-
+      const next = { ...prev, [field]: processed }
+      if (field === 'providerType') setShowErrors(false)
+      runValidation(next)
       return next
     })
   }
@@ -319,31 +290,30 @@ export function SSO() {
 
   const handleEdit = () => {
     if (!existingProvider) return
-
     try {
       let clientId = ''
       let clientSecret = ''
       let scopes = 'openid,profile,email'
       let entryPoint = ''
       let cert = ''
-      let callbackUrl = ''
+      let callbackUrlValue = ''
       let audience = ''
       let wantAssertionsSigned = true
       let idpMetadata = ''
 
       if (existingProvider.providerType === 'oidc' && existingProvider.oidcConfig) {
-        const config = JSON.parse(existingProvider.oidcConfig)
-        clientId = config.clientId || ''
-        clientSecret = config.clientSecret || ''
-        scopes = config.scopes?.join(',') || 'openid,profile,email'
+        const cfg = JSON.parse(existingProvider.oidcConfig)
+        clientId = cfg.clientId || ''
+        clientSecret = cfg.clientSecret || ''
+        scopes = cfg.scopes?.join(',') || 'openid,profile,email'
       } else if (existingProvider.providerType === 'saml' && existingProvider.samlConfig) {
-        const config = JSON.parse(existingProvider.samlConfig)
-        entryPoint = config.entryPoint || ''
-        cert = config.cert || ''
-        callbackUrl = config.callbackUrl || ''
-        audience = config.audience || ''
-        wantAssertionsSigned = config.wantAssertionsSigned ?? true
-        idpMetadata = config.idpMetadata || ''
+        const cfg = JSON.parse(existingProvider.samlConfig)
+        entryPoint = cfg.entryPoint || ''
+        cert = cfg.cert || ''
+        callbackUrlValue = cfg.callbackUrl || ''
+        audience = cfg.audience || ''
+        wantAssertionsSigned = cfg.wantAssertionsSigned ?? true
+        idpMetadata = cfg.idpMetadata || ''
       }
 
       setFormData({
@@ -356,7 +326,7 @@ export function SSO() {
         scopes,
         entryPoint,
         cert,
-        callbackUrl,
+        callbackUrl: callbackUrlValue,
         audience,
         wantAssertionsSigned,
         idpMetadata,
@@ -371,19 +341,15 @@ export function SSO() {
     }
   }
 
-  if (isLoadingProviders) {
-    return <SsoSkeleton />
-  }
+  if (isLoadingProviders) return <SsoSkeleton />
 
   if (existingProvider && !isEditing) {
     const providerCallbackUrl = `${getBaseUrl()}/api/auth/sso/callback/${existingProvider.providerId}`
 
     return (
       <div className='flex h-full flex-col gap-[16px]'>
-        {/* Scrollable Content */}
         <div className='min-h-0 flex-1 overflow-y-auto'>
           <div className='flex flex-col gap-[16px]'>
-            {/* Provider Info */}
             <div className='flex flex-col gap-[8px]'>
               <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
                 Provider ID
@@ -416,7 +382,6 @@ export function SSO() {
               </p>
             </div>
 
-            {/* Callback URL */}
             <div className='flex flex-col gap-[8px]'>
               <div className='flex items-center justify-between'>
                 <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
@@ -448,7 +413,6 @@ export function SSO() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className='mt-auto flex items-center justify-end'>
           <Button onClick={handleEdit} variant='tertiary'>
             Edit
@@ -460,7 +424,7 @@ export function SSO() {
 
   return (
     <form onSubmit={handleSubmit} autoComplete='off' className='flex h-full flex-col gap-[16px]'>
-      {/* Hidden dummy inputs to prevent browser password manager autofill */}
+      {/* Hidden honeypot inputs to prevent browser autofill */}
       <input
         type='text'
         name='fakeusernameremembered'
@@ -487,10 +451,9 @@ export function SSO() {
       />
       <input type='text' name='hidden' style={{ display: 'none' }} autoComplete='false' />
 
-      {/* Scrollable Content */}
       <div className='min-h-0 flex-1 overflow-y-auto'>
         <div className='flex flex-col gap-[16px]'>
-          {/* Provider Type Selection */}
+          {/* Provider Type */}
           <div className='flex flex-col gap-[8px]'>
             <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
               Provider Type
@@ -523,10 +486,7 @@ export function SSO() {
             <Combobox
               value={formData.providerId}
               onChange={(value: string) => handleInputChange('providerId', value)}
-              options={SSO_TRUSTED_PROVIDERS.map((id) => ({
-                label: id,
-                value: id,
-              }))}
+              options={SSO_TRUSTED_PROVIDERS.map((id) => ({ label: id, value: id }))}
               placeholder='Select a provider ID'
               editable={true}
               className={cn(
@@ -573,10 +533,12 @@ export function SSO() {
 
           {/* Domain */}
           <div className='flex flex-col gap-[8px]'>
-            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>Domain</span>
+            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
+              Email Domain
+            </span>
             <Input
               type='text'
-              placeholder='your-domain.identityprovider.com'
+              placeholder='yourcompany.com'
               value={formData.domain}
               name='sso_identity_domain'
               autoComplete='off'
@@ -592,6 +554,9 @@ export function SSO() {
                   'border-[var(--text-error)] focus:border-[var(--text-error)]'
               )}
             />
+            <p className='text-[13px] text-[var(--text-muted)]'>
+              The email address domain of users who will sign in (e.g. yourcompany.com)
+            </p>
             {showErrors && errors.domain.length > 0 && (
               <p className='text-[#DC2626] text-[11px] leading-tight dark:text-[#F87171]'>
                 {errors.domain.join(' ')}
@@ -599,7 +564,7 @@ export function SSO() {
             )}
           </div>
 
-          {/* Provider-specific fields */}
+          {/* OIDC fields */}
           {formData.providerType === 'oidc' ? (
             <>
               <div className='flex flex-col gap-[8px]'>
@@ -765,7 +730,6 @@ export function SSO() {
                 )}
               </div>
 
-              {/* Advanced SAML Options */}
               <div className='flex flex-col gap-[8px]'>
                 <button
                   type='button'
@@ -882,7 +846,6 @@ export function SSO() {
         </div>
       </div>
 
-      {/* Footer */}
       <div className='mt-auto flex items-center justify-end gap-[8px]'>
         {error && <p className='mr-auto text-[12px] text-[var(--text-error)]'>{error}</p>}
         <Button
@@ -906,38 +869,16 @@ export function SSO() {
 function SsoSkeleton() {
   return (
     <div className='flex h-full flex-col gap-[16px]'>
-      {/* Form fields skeleton */}
       <div className='min-h-0 flex-1 overflow-y-auto'>
         <div className='flex flex-col gap-[16px]'>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[80px]' />
-            <Skeleton className='h-9 w-full' />
-            <Skeleton className='h-[13px] w-[200px]' />
-          </div>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[70px]' />
-            <Skeleton className='h-9 w-full' />
-          </div>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[60px]' />
-            <Skeleton className='h-9 w-full' />
-          </div>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[50px]' />
-            <Skeleton className='h-9 w-full' />
-          </div>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[60px]' />
-            <Skeleton className='h-9 w-full' />
-          </div>
-          <div className='flex flex-col gap-[8px]'>
-            <Skeleton className='h-[13px] w-[80px]' />
-            <Skeleton className='h-9 w-full' />
-          </div>
+          {[80, 70, 60, 50, 60, 80].map((w, i) => (
+            <div key={i} className='flex flex-col gap-[8px]'>
+              <Skeleton className={`h-[13px] w-[${w}px]`} />
+              <Skeleton className='h-9 w-full' />
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* Footer skeleton */}
       <div className='mt-auto flex items-center justify-end'>
         <Skeleton className='h-9 w-[60px]' />
       </div>

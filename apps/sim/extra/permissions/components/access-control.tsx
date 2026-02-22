@@ -38,7 +38,7 @@ import {
   usePermissionGroups,
   useRemovePermissionGroupMember,
   useUpdatePermissionGroup,
-} from '@/ee/access-control/hooks/permission-groups'
+} from '@/extra/permissions/hooks'
 import { useOrganization, useOrganizations } from '@/hooks/queries/organization'
 import { useSubscriptionData } from '@/hooks/queries/subscription'
 import { PROVIDER_DEFINITIONS } from '@/providers/models'

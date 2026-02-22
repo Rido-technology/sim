@@ -3,7 +3,7 @@ import { createLogger } from '@sim/logger'
 import { baseStyles } from '@/components/emails/_styles'
 import { EmailLayout } from '@/components/emails/components'
 import { getBaseUrl } from '@/lib/core/utils/urls'
-import { getBrandConfig } from '@/ee/whitelabeling'
+import { getBrandConfig } from '@/extra/branding'
 
 const logger = createLogger('WorkspaceInvitationEmail')
 

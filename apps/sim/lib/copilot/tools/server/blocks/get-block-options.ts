@@ -8,7 +8,7 @@ import {
 } from '@/lib/copilot/tools/shared/schemas'
 import { getAllowedIntegrationsFromEnv } from '@/lib/core/config/feature-flags'
 import { registry as blockRegistry, getLatestBlock } from '@/blocks/registry'
-import { getUserPermissionConfig } from '@/ee/access-control/utils/permission-check'
+import { getUserPermissionConfig } from '@/extra/permissions/utils/access-check'
 import { tools as toolsRegistry } from '@/tools/registry'
 
 export const getBlockOptionsServerTool: BaseServerTool<

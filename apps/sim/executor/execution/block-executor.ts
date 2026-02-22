@@ -6,7 +6,7 @@ import {
   hydrateUserFilesWithBase64,
 } from '@/lib/uploads/utils/user-file-base64.server'
 import { sanitizeInputFormat, sanitizeTools } from '@/lib/workflows/comparison/normalize'
-import { validateBlockType } from '@/ee/access-control/utils/permission-check'
+import { validateBlockType } from '@/extra/permissions/utils/access-check'
 import {
   BlockType,
   buildResumeApiUrl,

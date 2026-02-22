@@ -20,7 +20,7 @@ interface SSOAuthProps {
   identifier: string
 }
 
-const validateEmailField = (emailValue: string): string[] => {
+function checkWorkEmailValid(emailValue: string): string[] {
   const errors: string[] = []
 
   if (!emailValue || !emailValue.trim()) {
@@ -51,20 +51,17 @@ export default function SSOAuth({ identifier }: SSOAuthProps) {
   }
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = e.target.value
-    setEmail(newEmail)
+    setEmail(e.target.value)
     setShowEmailValidationError(false)
     setEmailErrors([])
   }
 
   const handleAuthenticate = async () => {
-    const emailValidationErrors = validateEmailField(email)
-    setEmailErrors(emailValidationErrors)
-    setShowEmailValidationError(emailValidationErrors.length > 0)
+    const errors = checkWorkEmailValid(email)
+    setEmailErrors(errors)
+    setShowEmailValidationError(errors.length > 0)
 
-    if (emailValidationErrors.length > 0) {
-      return
-    }
+    if (errors.length > 0) return
 
     setIsLoading(true)
 
@@ -88,8 +85,9 @@ export default function SSOAuth({ identifier }: SSOAuthProps) {
       }
 
       const callbackUrl = `/chat/${identifier}`
-      const ssoUrl = `/sso?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl)}`
-      router.push(ssoUrl)
+      router.push(
+        `/sso?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+      )
     } catch (error) {
       logger.error('SSO authentication error:', error)
       setEmailErrors(['An error occurred during authentication'])

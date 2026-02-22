@@ -1,6 +1,5 @@
 /**
- * List of trusted SSO provider identifiers.
- * Used for validation and autocomplete in SSO configuration.
+ * Recognised SSO provider identifiers used for validation and autocomplete.
  */
 export const SSO_TRUSTED_PROVIDERS = [
   'okta',
