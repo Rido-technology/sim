@@ -23,6 +23,52 @@ const APP_KEYWORDS = [
   'process automation',
 ]
 
+const FAVICON_SIZES = ['16x16', '32x32', '192x192', '512x512'] as const
+
+/** Builds the OpenGraph section of the metadata object. */
+function buildOpenGraphMeta(
+  brandName: string,
+  baseUrl: string,
+  logoUrl: string
+): Metadata['openGraph'] {
+  return {
+    type: 'website',
+    locale: 'en_US',
+    url: baseUrl,
+    title: brandName,
+    description: APP_DESCRIPTION_FULL,
+    siteName: brandName,
+    images: [{ url: logoUrl, width: 2130, height: 1200, alt: brandName }],
+  }
+}
+
+/** Builds the Twitter card section of the metadata object. */
+function buildTwitterMeta(brandName: string, logoUrl: string): Metadata['twitter'] {
+  return {
+    card: 'summary_large_image',
+    title: brandName,
+    description: APP_DESCRIPTION_FULL,
+    images: [logoUrl],
+    creator: '@Myappai',
+    site: '@Myappai',
+  }
+}
+
+/** Builds the icons section from the favicon URL. */
+function buildIconsMeta(faviconUrl: string): Metadata['icons'] {
+  return {
+    icon: [
+      ...FAVICON_SIZES.map((size) => ({
+        url: `/favicon/favicon-${size}.png`,
+        sizes: size,
+        type: 'image/png' as const,
+      })),
+      { url: faviconUrl, sizes: 'any', type: 'image/png' as const },
+    ],
+    apple: '/favicon/apple-touch-icon.png',
+  }
+}
+
 /**
  * Generates Next.js Metadata based on the active brand configuration.
  * Accepts an optional partial override to customise per-page metadata.
@@ -31,8 +77,7 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
   const brand = getBrandConfig()
   const baseUrl = getBaseUrl()
 
-  const defaultLogo = '/logo/426-240/primary/small.png'
-  const logoUrl = brand.logoUrl || defaultLogo
+  const logoUrl = brand.logoUrl || '/logo/426-240/primary/small.png'
   const faviconUrl = brand.faviconUrl || '/Myapp.png'
 
   return {
@@ -64,42 +109,10 @@ export function generateBrandedMetadata(override: Partial<Metadata> = {}): Metad
         'max-snippet': -1,
       },
     },
-    openGraph: {
-      type: 'website',
-      locale: 'en_US',
-      url: baseUrl,
-      title: brand.name,
-      description: APP_DESCRIPTION_FULL,
-      siteName: brand.name,
-      images: [
-        {
-          url: logoUrl,
-          width: 2130,
-          height: 1200,
-          alt: brand.name,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: brand.name,
-      description: APP_DESCRIPTION_FULL,
-      images: [logoUrl],
-      creator: '@Myappai',
-      site: '@Myappai',
-    },
+    openGraph: buildOpenGraphMeta(brand.name, baseUrl, logoUrl),
+    twitter: buildTwitterMeta(brand.name, logoUrl),
     manifest: '/manifest.webmanifest',
-    icons: {
-      icon: [
-        { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-        { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/favicon/favicon-192x192.png', sizes: '192x192', type: 'image/png' },
-        { url: '/favicon/favicon-512x512.png', sizes: '512x512', type: 'image/png' },
-        { url: faviconUrl, sizes: 'any', type: 'image/png' },
-      ],
-      apple: '/favicon/apple-touch-icon.png',
-      shortcut: faviconUrl,
-    },
+    icons: buildIconsMeta(faviconUrl),
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',

@@ -1,6 +1,6 @@
 'use client'
 
-import { type KeyboardEvent, useState } from 'react'
+import { type KeyboardEvent, useCallback, useState } from 'react'
 import { createLogger } from '@sim/logger'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/emcn'
@@ -16,57 +16,61 @@ import Nav from '@/app/(landing)/components/nav/nav'
 
 const logger = createLogger('SSOAuth')
 
-interface SSOAuthProps {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getEmailErrors(value: string): string[] {
+  if (!value?.trim()) return ['Email is required.']
+  const result = quickValidateEmail(value.trim().toLowerCase())
+  return result.isValid ? [] : [result.reason || 'Please enter a valid email address.']
+}
+
+// ---------------------------------------------------------------------------
+// useSSOAuth hook â€“ encapsulates the authentication flow logic
+// ---------------------------------------------------------------------------
+
+interface UseSSOAuthOptions {
   identifier: string
+  router: ReturnType<typeof useRouter>
 }
 
-function checkWorkEmailValid(emailValue: string): string[] {
-  const errors: string[] = []
-
-  if (!emailValue || !emailValue.trim()) {
-    errors.push('Email is required.')
-    return errors
-  }
-
-  const validation = quickValidateEmail(emailValue.trim().toLowerCase())
-  if (!validation.isValid) {
-    errors.push(validation.reason || 'Please enter a valid email address.')
-  }
-
-  return errors
+interface SSOAuthState {
+  email: string
+  emailErrors: string[]
+  showEmailValidationError: boolean
+  isLoading: boolean
 }
 
-export default function SSOAuth({ identifier }: SSOAuthProps) {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [emailErrors, setEmailErrors] = useState<string[]>([])
-  const [showEmailValidationError, setShowEmailValidationError] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+function useSSOAuth({ identifier, router }: UseSSOAuthOptions) {
+  const [authState, setAuthState] = useState<SSOAuthState>({
+    email: '',
+    emailErrors: [],
+    showEmailValidationError: false,
+    isLoading: false,
+  })
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleAuthenticate()
+  const setEmail = useCallback((value: string) => {
+    setAuthState((prev) => ({ ...prev, email: value, showEmailValidationError: false, emailErrors: [] }))
+  }, [])
+
+  const setErrors = useCallback((errors: string[]) => {
+    setAuthState((prev) => ({ ...prev, emailErrors: errors, showEmailValidationError: errors.length > 0, isLoading: false }))
+  }, [])
+
+  const authenticate = useCallback(async () => {
+    const { email } = authState
+    const errors = getEmailErrors(email)
+
+    if (errors.length > 0) {
+      setErrors(errors)
+      return
     }
-  }
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-    setShowEmailValidationError(false)
-    setEmailErrors([])
-  }
-
-  const handleAuthenticate = async () => {
-    const errors = checkWorkEmailValid(email)
-    setEmailErrors(errors)
-    setShowEmailValidationError(errors.length > 0)
-
-    if (errors.length > 0) return
-
-    setIsLoading(true)
+    setAuthState((prev) => ({ ...prev, isLoading: true }))
 
     try {
-      const checkResponse = await fetch(`/api/chat/${identifier}`, {
+      const res = await fetch(`/api/chat/${identifier}`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -76,23 +80,41 @@ export default function SSOAuth({ identifier }: SSOAuthProps) {
         body: JSON.stringify({ email, checkSSOAccess: true }),
       })
 
-      if (!checkResponse.ok) {
-        const errorData = await checkResponse.json()
-        setEmailErrors([errorData.error || 'Email not authorized for this chat'])
-        setShowEmailValidationError(true)
-        setIsLoading(false)
+      if (!res.ok) {
+        const data = await res.json()
+        setErrors([(data as { error?: string }).error || 'Email not authorized for this chat'])
         return
       }
 
-      const callbackUrl = `/chat/${identifier}`
       router.push(
-        `/sso?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+        `/sso?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(`/chat/${identifier}`)}`
       )
     } catch (error) {
       logger.error('SSO authentication error:', error)
-      setEmailErrors(['An error occurred during authentication'])
-      setShowEmailValidationError(true)
-      setIsLoading(false)
+      setErrors(['An error occurred during authentication'])
+    }
+  }, [authState, identifier, router, setErrors])
+
+  return { authState, setEmail, authenticate }
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+interface SSOAuthProps {
+  identifier: string
+}
+
+export default function SSOAuth({ identifier }: SSOAuthProps) {
+  const router = useRouter()
+  const { authState, setEmail, authenticate } = useSSOAuth({ identifier, router })
+  const { email, emailErrors, showEmailValidationError, isLoading } = authState
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      authenticate()
     }
   }
 
@@ -117,7 +139,7 @@ export default function SSOAuth({ identifier }: SSOAuthProps) {
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
-                  handleAuthenticate()
+                  authenticate()
                 }}
                 className={`${inter.className} mt-8 w-full max-w-[410px] space-y-6`}
               >
@@ -135,7 +157,7 @@ export default function SSOAuth({ identifier }: SSOAuthProps) {
                     autoCorrect='off'
                     placeholder='Enter your work email'
                     value={email}
-                    onChange={handleEmailChange}
+                    onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className={cn(
                       'rounded-[10px] shadow-sm transition-colors focus:border-gray-400 focus:ring-2 focus:ring-gray-100',

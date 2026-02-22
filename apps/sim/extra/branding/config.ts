@@ -1,63 +1,63 @@
 import { type BrandConfig, defaultBrandConfig, type ThemeColors } from '@/lib/branding'
+import { getEnv } from '@/lib/core/config/env'
 
 export type { BrandConfig, ThemeColors }
-import { getEnv } from '@/lib/core/config/env'
-/**
- * Brand constants 
- */
-const BRAND_NAME = 'Myapp'
-const BRAND_LOGO_URL = '/logo/Myapp-logo.png'
-const BRAND_FAVICON_URL = '/favicon/Myapp-favicon.png'
-const CUSTOM_CSS_URL = getEnv('NEXT_PUBLIC_CUSTOM_CSS_URL') || defaultBrandConfig.customCssUrl
-const SUPPORT_EMAIL = 'support@Myapp.ai'
-const DOCUMENTATION_URL = 'https://docs.Myapp.ai'
-const TERMS_URL = 'https://Myapp.ai/terms'
-const PRIVACY_URL = 'https://Myapp.ai/privacy'
 
-const THEME_PRIMARY_COLOR = '#4A90E2'
-const THEME_PRIMARY_HOVER_COLOR = '#357ABD'
-const THEME_ACCENT_COLOR = '#F5A623'
-const THEME_ACCENT_HOVER_COLOR = '#D48806'
-const THEME_BACKGROUND_COLOR = '#FFFFFF'
+/** Static brand identity settings. */
+const BRAND_IDENTITY = {
+  name: 'Myapp',
+  logoUrl: '/logo/Myapp-logo.png',
+  faviconUrl: '/favicon/Myapp-favicon.png',
+  supportEmail: 'support@Myapp.ai',
+  documentationUrl: 'https://docs.Myapp.ai',
+  termsUrl: 'https://Myapp.ai/terms',
+  privacyUrl: 'https://Myapp.ai/privacy',
+} as const
+
+/** Brand colour palette. */
+const BRAND_PALETTE = {
+  primaryColor: '#4A90E2',
+  primaryHoverColor: '#357ABD',
+  accentColor: '#F5A623',
+  accentHoverColor: '#D48806',
+  backgroundColor: '#FFFFFF',
+} as const
 
 /**
- * Resolves theme color values from constants with fallback to defaults.
+ * Merges the static colour palette with defaults for any missing keys.
  */
-function resolveThemeColors(): ThemeColors {
-  const defaultTheme = defaultBrandConfig.theme || {}
+function buildThemeColors(): ThemeColors {
+  const fallback = defaultBrandConfig.theme ?? {}
   return {
-    primaryColor: THEME_PRIMARY_COLOR || defaultTheme.primaryColor,
-    primaryHoverColor: THEME_PRIMARY_HOVER_COLOR || defaultTheme.primaryHoverColor,
-    accentColor: THEME_ACCENT_COLOR || defaultTheme.accentColor,
-    accentHoverColor: THEME_ACCENT_HOVER_COLOR || defaultTheme.accentHoverColor,
-    backgroundColor: THEME_BACKGROUND_COLOR || defaultTheme.backgroundColor,
+    primaryColor: BRAND_PALETTE.primaryColor || fallback.primaryColor,
+    primaryHoverColor: BRAND_PALETTE.primaryHoverColor || fallback.primaryHoverColor,
+    accentColor: BRAND_PALETTE.accentColor || fallback.accentColor,
+    accentHoverColor: BRAND_PALETTE.accentHoverColor || fallback.accentHoverColor,
+    backgroundColor: BRAND_PALETTE.backgroundColor || fallback.backgroundColor,
   }
 }
 
 /**
- * Builds the full brand configuration from constants.
- * Falls back to default brand config for any missing values.
+ * Assembles the full brand configuration, merging static identity,
+ * runtime CSS URL, and resolved theme colours.
  */
-function buildBrandConfig(): BrandConfig {
+function assembleBrandConfig(): BrandConfig {
+  const customCssUrl =
+    getEnv('NEXT_PUBLIC_CUSTOM_CSS_URL') || defaultBrandConfig.customCssUrl
+
   return {
-    name: BRAND_NAME || defaultBrandConfig.name,
-    logoUrl: BRAND_LOGO_URL || defaultBrandConfig.logoUrl,
-    faviconUrl: BRAND_FAVICON_URL || defaultBrandConfig.faviconUrl,
-    customCssUrl: CUSTOM_CSS_URL || defaultBrandConfig.customCssUrl,
-    supportEmail: SUPPORT_EMAIL || defaultBrandConfig.supportEmail,
-    documentationUrl: DOCUMENTATION_URL || defaultBrandConfig.documentationUrl,
-    termsUrl: TERMS_URL || defaultBrandConfig.termsUrl,
-    privacyUrl: PRIVACY_URL || defaultBrandConfig.privacyUrl,
-    theme: resolveThemeColors(),
+    ...BRAND_IDENTITY,
+    customCssUrl: customCssUrl || defaultBrandConfig.customCssUrl,
+    theme: buildThemeColors(),
   }
 }
 
 /**
- * Returns the active brand configuration derived from constants.
+ * Returns the active brand configuration.
  */
-export const getBrandConfig = (): BrandConfig => buildBrandConfig()
+export const getBrandConfig = (): BrandConfig => assembleBrandConfig()
 
 /**
  * React hook to access brand configuration inside components.
  */
-export const useBrandConfig = (): BrandConfig => getBrandConfig()
+export const useBrandConfig = (): BrandConfig => assembleBrandConfig()

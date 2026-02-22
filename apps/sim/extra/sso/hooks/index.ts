@@ -11,12 +11,35 @@ export const ssoKeys = {
   providers: () => [...ssoKeys.all, 'providers'] as const,
 }
 
-async function loadSSOProviders() {
-  const response = await fetch('/api/auth/sso/providers')
-  if (!response.ok) {
-    throw new Error('Failed to fetch SSO providers')
+/** SSO API endpoint constants. */
+const SSO_API = {
+  providers: '/api/auth/sso/providers',
+  register: '/api/auth/sso/register',
+} as const
+
+/**
+ * Fetches the raw SSO provider list from the API.
+ */
+async function fetchSSOProviders(): Promise<unknown> {
+  const res = await fetch(SSO_API.providers)
+  if (!res.ok) throw new Error('Failed to fetch SSO providers')
+  return res.json()
+}
+
+/**
+ * Posts a new or updated SSO provider configuration to the API.
+ */
+async function postSSOConfig(body: ConfigureSSOParams): Promise<unknown> {
+  const res = await fetch(SSO_API.register, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error((err as { message?: string }).message || 'Failed to configure SSO')
   }
-  return response.json()
+  return res.json()
 }
 
 /**
@@ -25,13 +48,13 @@ async function loadSSOProviders() {
 export function useSSOProviders() {
   return useQuery({
     queryKey: ssoKeys.providers(),
-    queryFn: loadSSOProviders,
+    queryFn: fetchSSOProviders,
     staleTime: 5 * 60 * 1000,
     placeholderData: keepPreviousData,
   })
 }
 
-interface ConfigureSSOParams {
+export interface ConfigureSSOParams {
   provider: string
   domain: string
   clientId: string
@@ -46,23 +69,9 @@ export function useConfigureSSO() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (config: ConfigureSSOParams) => {
-      const response = await fetch('/api/auth/sso/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to configure SSO')
-      }
-
-      return response.json()
-    },
+    mutationFn: (config: ConfigureSSOParams) => postSSOConfig(config),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ssoKeys.providers() })
-
       if (variables.orgId) {
         queryClient.invalidateQueries({ queryKey: organizationKeys.detail(variables.orgId) })
         queryClient.invalidateQueries({ queryKey: organizationKeys.lists() })
