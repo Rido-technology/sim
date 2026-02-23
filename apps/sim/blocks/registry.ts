@@ -151,6 +151,7 @@ import { VideoGeneratorBlock, VideoGeneratorV2Block } from '@/blocks/blocks/vide
 import { VisionBlock, VisionV2Block } from '@/blocks/blocks/vision'
 import { WaitBlock } from '@/blocks/blocks/wait'
 import { WealthboxBlock } from '@/blocks/blocks/wealthbox'
+import { WebexBlock } from '@/blocks/blocks/webex'
 import { WebflowBlock } from '@/blocks/blocks/webflow'
 import { WebhookRequestBlock } from '@/blocks/blocks/webhook_request'
 import { WhatsAppBlock } from '@/blocks/blocks/whatsapp'
@@ -339,6 +340,7 @@ export const registry: Record<string, BlockConfig> = {
   vision_v2: VisionV2Block,
   wait: WaitBlock,
   wealthbox: WealthboxBlock,
+  webex: WebexBlock,
   webflow: WebflowBlock,
   webhook_request: WebhookRequestBlock,
   whatsapp: WhatsAppBlock,

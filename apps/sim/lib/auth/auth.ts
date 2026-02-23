@@ -407,6 +407,7 @@ export const auth = betterAuth({
         'salesforce',
         'wealthbox',
         'zoom',
+        'webex',
         'wordpress',
         'linear',
         'shopify',
@@ -2400,6 +2401,66 @@ export const auth = betterAuth({
               }
             } catch (error) {
               logger.error('Error in Zoom getUserInfo:', { error })
+              return null
+            }
+          },
+        },
+
+        // Webex provider
+        {
+          providerId: 'webex',
+          clientId: env.WEBEX_CLIENT_ID as string,
+          clientSecret: env.WEBEX_CLIENT_SECRET as string,
+          authorizationUrl: 'https://webexapis.com/v1/authorize',
+          tokenUrl: 'https://webexapis.com/v1/access_token',
+          userInfoUrl: 'https://webexapis.com/v1/people/me',
+          scopes: [
+            'spark:messages_write',
+            'spark:messages_read',
+            'spark:rooms_read',
+            'spark:rooms_write',
+            'spark:memberships_read',
+            'spark:people_read',
+            // Meeting scopes removed - may require Webex Meetings license
+            // 'meeting:schedules_write',
+            // 'meeting:schedules_read',
+          ],
+          responseType: 'code',
+          accessType: 'offline',
+          authentication: 'body',
+          prompt: 'consent',
+          redirectURI: `${getBaseUrl()}/api/auth/oauth2/callback/webex`,
+          getUserInfo: async (tokens) => {
+            try {
+              logger.info('Fetching Webex user profile')
+
+              const response = await fetch('https://webexapis.com/v1/people/me', {
+                headers: {
+                  Authorization: `Bearer ${tokens.accessToken}`,
+                },
+              })
+
+              if (!response.ok) {
+                logger.error('Failed to fetch Webex user info', {
+                  status: response.status,
+                  statusText: response.statusText,
+                })
+                throw new Error('Failed to fetch user info')
+              }
+
+              const profile = await response.json()
+
+              return {
+                id: `${profile.id}-${crypto.randomUUID()}`,
+                name: profile.displayName || 'Webex User',
+                email: profile.emails?.[0] || `${profile.id}@webex.user`,
+                emailVerified: true,
+                image: profile.avatar || undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            } catch (error) {
+              logger.error('Error in Webex getUserInfo:', { error })
               return null
             }
           },

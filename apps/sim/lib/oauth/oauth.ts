@@ -36,6 +36,7 @@ import {
   VertexIcon,
   WealthboxIcon,
   WebflowIcon,
+  WebexIcon,
   WordpressIcon,
   xIcon,
   ZoomIcon,
@@ -796,6 +797,31 @@ export const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
     },
     defaultService: 'spotify',
   },
+  webex: {
+    name: 'Webex',
+    icon: WebexIcon,
+    services: {
+      webex: {
+        name: 'Webex',
+        description: 'Send messages, manage spaces, and schedule Webex meetings.',
+        providerId: 'webex',
+        icon: WebexIcon,
+        baseProviderIcon: WebexIcon,
+        scopes: [
+          'spark:messages_write',
+          'spark:messages_read',
+          'spark:rooms_read',
+          'spark:rooms_write',
+          'spark:memberships_read',
+          'spark:people_read',
+          // Meeting scopes removed - may require Webex Meetings license
+          // 'meeting:schedules_write',
+          // 'meeting:schedules_read',
+        ],
+      },
+    },
+    defaultService: 'webex',
+  },
 }
 
 interface ProviderAuthConfig {
@@ -1105,6 +1131,19 @@ function getProviderAuthConfig(provider: string): ProviderAuthConfig {
         clientSecret,
         useBasicAuth: true,
         supportsRefreshTokenRotation: false,
+      }
+    }
+    case 'webex': {
+      const { clientId, clientSecret } = getCredentials(
+        env.WEBEX_CLIENT_ID,
+        env.WEBEX_CLIENT_SECRET
+      )
+      return {
+        tokenEndpoint: 'https://webexapis.com/v1/access_token',
+        clientId,
+        clientSecret,
+        useBasicAuth: false,
+        supportsRefreshTokenRotation: true,
       }
     }
     case 'wordpress': {
