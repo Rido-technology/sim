@@ -2421,9 +2421,9 @@ export const auth = betterAuth({
             'spark:rooms_write',
             'spark:memberships_read',
             'spark:people_read',
-            // Meeting scopes removed - may require Webex Meetings license
-            // 'meeting:schedules_write',
-            // 'meeting:schedules_read',
+            // Meeting scopes skiped - may require Webex Meetings license
+             'meeting:schedules_write',
+             'meeting:schedules_read',
           ],
           responseType: 'code',
           accessType: 'offline',

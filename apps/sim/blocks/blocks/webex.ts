@@ -11,7 +11,7 @@ export const WebexBlock: BlockConfig = {
     'Integrate Webex into workflows. Send and read messages in rooms, manage spaces and memberships, get people info, schedule and manage meetings.',
   docsLink: 'https://docs.sim.ai/tools/webex',
   category: 'tools',
-  bgColor: '#00B140',
+  bgColor: '#f9faf9',
   icon: WebexIcon,
   subBlocks: [
     {
