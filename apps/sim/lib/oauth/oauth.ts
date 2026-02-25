@@ -5,6 +5,7 @@ import {
   CalComIcon,
   ConfluenceIcon,
   DropboxIcon,
+  FacebookIcon,
   GithubIcon,
   GmailIcon,
   GoogleCalendarIcon,
@@ -814,13 +815,28 @@ export const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
           'spark:rooms_write',
           'spark:memberships_read',
           'spark:people_read',
-          // Meeting scopes removed - may require Webex Meetings license
-          // 'meeting:schedules_write',
-          // 'meeting:schedules_read',
+          // require Webex Meetings license
+          'meeting:schedules_write',
+          'meeting:schedules_read',
         ],
       },
     },
     defaultService: 'webex',
+  },
+  facebook: {
+    name: 'Facebook',
+    icon: FacebookIcon,
+    services: {
+      facebook: {
+        name: 'Facebook',
+        description: 'Publish posts, retrieve page data, and manage comments on Facebook Pages.',
+        providerId: 'facebook',
+        icon: FacebookIcon,
+        baseProviderIcon: FacebookIcon,
+        scopes: ['pages_manage_posts', 'pages_read_engagement', 'pages_show_list'],
+      },
+    },
+    defaultService: 'facebook',
   },
 }
 
@@ -1089,6 +1105,19 @@ function getProviderAuthConfig(provider: string): ProviderAuthConfig {
       )
       return {
         tokenEndpoint: 'https://www.linkedin.com/oauth/v2/accessToken',
+        clientId,
+        clientSecret,
+        useBasicAuth: false,
+        supportsRefreshTokenRotation: false,
+      }
+    }
+    case 'facebook': {
+      const { clientId, clientSecret } = getCredentials(
+        env.FACEBOOK_CLIENT_ID,
+        env.FACEBOOK_CLIENT_SECRET
+      )
+      return {
+        tokenEndpoint: 'https://graph.facebook.com/v19.0/oauth/access_token',
         clientId,
         clientSecret,
         useBasicAuth: false,

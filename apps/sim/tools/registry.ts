@@ -288,6 +288,14 @@ import {
   exaResearchTool,
   exaSearchTool,
 } from '@/tools/exa'
+import {
+  facebookDeletePostTool,
+  facebookGetCommentsTool,
+  facebookGetMyPagesTool,
+  facebookGetPageTool,
+  facebookGetPostsTool,
+  facebookPostToPageTool,
+} from '@/tools/facebook'
 import { fileParserV2Tool, fileParserV3Tool, fileParseTool } from '@/tools/file'
 import {
   firecrawlAgentTool,
@@ -1917,6 +1925,12 @@ export const tools: Record<string, ToolConfig> = {
   file_parser: fileParseTool,
   file_parser_v2: fileParserV2Tool,
   file_parser_v3: fileParserV3Tool,
+  facebook_post_to_page: facebookPostToPageTool,
+  facebook_get_page: facebookGetPageTool,
+  facebook_get_posts: facebookGetPostsTool,
+  facebook_get_comments: facebookGetCommentsTool,
+  facebook_delete_post: facebookDeletePostTool,
+  facebook_get_my_pages: facebookGetMyPagesTool,
   firecrawl_scrape: firecrawlScrapeTool,
   firecrawl_search: firecrawlSearchTool,
   firecrawl_crawl: firecrawlCrawlTool,

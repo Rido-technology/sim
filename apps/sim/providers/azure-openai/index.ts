@@ -91,13 +91,13 @@ async function executeChatCompletionsRequest(
 
   const tools: ChatCompletionTool[] | undefined = request.tools?.length
     ? request.tools.map((tool) => ({
-        type: 'function' as const,
-        function: {
-          name: tool.id,
-          description: tool.description,
-          parameters: tool.parameters,
-        },
-      }))
+      type: 'function' as const,
+      function: {
+        name: tool.id,
+        description: tool.description,
+        parameters: tool.parameters,
+      },
+    }))
     : undefined
 
   const payload: ChatCompletionCreateParamsBase & { verbosity?: string } = {
@@ -515,9 +515,9 @@ async function executeChatCompletionsRequest(
             toolCalls:
               toolCalls.length > 0
                 ? {
-                    list: toolCalls,
-                    count: toolCalls.length,
-                  }
+                  list: toolCalls,
+                  count: toolCalls.length,
+                }
                 : undefined,
             providerTiming: {
               startTime: providerStartTimeISO,
@@ -667,8 +667,9 @@ export const azureOpenAIProvider: ProviderConfig = {
     const azureApiVersion =
       request.azureApiVersion || env.AZURE_OPENAI_API_VERSION || '2024-07-01-preview'
     const deploymentName = request.model.replace('azure/', '')
-    const apiUrl = `${azureEndpoint.replace(/\/$/, '')}/openai/v1/responses?api-version=${azureApiVersion}`
-
+    // const apiUrl = `${azureEndpoint.replace(/\/$/, '')}/openai/v1/responses?api-version=${azureApiVersion}`
+    const baseUrl = azureEndpoint.replace(/\/$/, '');
+    const apiUrl = `${baseUrl}/openai/v1/responses${azureApiVersion ? `?api-version=${azureApiVersion}` : ''}`;
     return executeResponsesProviderRequest(request, {
       providerId: 'azure-openai',
       providerLabel: 'Azure OpenAI',

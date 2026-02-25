@@ -1,0 +1,6 @@
+export { facebookDeletePostTool } from './delete_post'
+export { facebookGetCommentsTool } from './get_comments'
+export { facebookGetMyPagesTool } from './get_my_pages'
+export { facebookGetPageTool } from './get_page'
+export { facebookGetPostsTool } from './get_posts'
+export { facebookPostToPageTool } from './post_to_page'

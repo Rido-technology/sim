@@ -408,6 +408,7 @@ export const auth = betterAuth({
         'wealthbox',
         'zoom',
         'webex',
+        'facebook',
         'wordpress',
         'linear',
         'shopify',
@@ -573,7 +574,7 @@ export const auth = betterAuth({
             })
             throw new Error(
               validation.reason ||
-                "We are unable to deliver the verification email to that address. Please make sure it's valid and able to receive emails."
+              "We are unable to deliver the verification email to that address. Please make sure it's valid and able to receive emails."
             )
           }
 
@@ -2422,8 +2423,8 @@ export const auth = betterAuth({
             'spark:memberships_read',
             'spark:people_read',
             // Meeting scopes skiped - may require Webex Meetings license
-             'meeting:schedules_write',
-             'meeting:schedules_read',
+            'meeting:schedules_write',
+            'meeting:schedules_read',
           ],
           responseType: 'code',
           accessType: 'offline',
@@ -2461,6 +2462,63 @@ export const auth = betterAuth({
               }
             } catch (error) {
               logger.error('Error in Webex getUserInfo:', { error })
+              return null
+            }
+          },
+        },
+
+        // Facebook provider
+        {
+          providerId: 'facebook',
+          clientId: env.FACEBOOK_CLIENT_ID as string,
+          clientSecret: env.FACEBOOK_CLIENT_SECRET as string,
+          authorizationUrl: 'https://www.facebook.com/v19.0/dialog/oauth',
+          tokenUrl: 'https://graph.facebook.com/v19.0/oauth/access_token',
+          userInfoUrl: 'https://graph.facebook.com/v19.0/me?fields=id,name,email,picture',
+          scopes: [
+            'public_profile',
+            //'email',
+            'pages_manage_posts',
+            'pages_read_engagement',
+            'pages_show_list',
+          ],
+          responseType: 'code',
+          authentication: 'body',
+          redirectURI: `${getBaseUrl()}/api/auth/oauth2/callback/facebook`,
+          getUserInfo: async (tokens) => {
+            try {
+              logger.info('Fetching Facebook user profile')
+
+              const response = await fetch(
+                'https://graph.facebook.com/v19.0/me?fields=id,name,email,picture',
+                {
+                  headers: {
+                    Authorization: `Bearer ${tokens.accessToken}`,
+                  },
+                }
+              )
+
+              if (!response.ok) {
+                logger.error('Failed to fetch Facebook user info', {
+                  status: response.status,
+                  statusText: response.statusText,
+                })
+                throw new Error('Failed to fetch user info')
+              }
+
+              const profile = await response.json()
+
+              return {
+                id: `${profile.id}-${crypto.randomUUID()}`,
+                name: profile.name || 'Facebook User',
+                email: profile.email || `${profile.id}@facebook.user`,
+                emailVerified: true,
+                image: profile.picture?.data?.url || undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            } catch (error) {
+              logger.error('Error in Facebook getUserInfo:', { error })
               return null
             }
           },
@@ -2635,318 +2693,318 @@ export const auth = betterAuth({
     // Only include the Stripe plugin when billing is enabled
     ...(isBillingEnabled && stripeClient
       ? [
-          stripe({
-            stripeClient,
-            stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
-            createCustomerOnSignUp: true,
-            onCustomerCreate: async ({ stripeCustomer, user }) => {
-              logger.info('[onCustomerCreate] Stripe customer created', {
-                stripeCustomerId: stripeCustomer.id,
-                userId: user.id,
-              })
+        stripe({
+          stripeClient,
+          stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
+          createCustomerOnSignUp: true,
+          onCustomerCreate: async ({ stripeCustomer, user }) => {
+            logger.info('[onCustomerCreate] Stripe customer created', {
+              stripeCustomerId: stripeCustomer.id,
+              userId: user.id,
+            })
+          },
+          subscription: {
+            enabled: true,
+            plans: getPlans(),
+            authorizeReference: async ({ user, referenceId }) => {
+              return await authorizeSubscriptionReference(user.id, referenceId)
             },
-            subscription: {
-              enabled: true,
-              plans: getPlans(),
-              authorizeReference: async ({ user, referenceId }) => {
-                return await authorizeSubscriptionReference(user.id, referenceId)
-              },
-              getCheckoutSessionParams: async ({ plan, subscription }) => {
-                if (plan.name === 'team') {
-                  return {
-                    params: {
-                      allow_promotion_codes: true,
-                      line_items: [
-                        {
-                          price: plan.priceId,
-                          quantity: subscription?.seats || 1,
-                          adjustable_quantity: {
-                            enabled: true,
-                            minimum: 1,
-                            maximum: 50,
-                          },
-                        },
-                      ],
-                    },
-                  }
-                }
-
+            getCheckoutSessionParams: async ({ plan, subscription }) => {
+              if (plan.name === 'team') {
                 return {
                   params: {
                     allow_promotion_codes: true,
+                    line_items: [
+                      {
+                        price: plan.priceId,
+                        quantity: subscription?.seats || 1,
+                        adjustable_quantity: {
+                          enabled: true,
+                          minimum: 1,
+                          maximum: 50,
+                        },
+                      },
+                    ],
                   },
                 }
-              },
-              onSubscriptionComplete: async ({
-                stripeSubscription,
-                subscription,
-              }: {
-                event: Stripe.Event
-                stripeSubscription: Stripe.Subscription
-                subscription: any
-              }) => {
-                const { priceId, planFromStripe, isTeamPlan } =
-                  resolvePlanFromStripeSubscription(stripeSubscription)
+              }
 
-                logger.info('[onSubscriptionComplete] Subscription created', {
-                  subscriptionId: subscription.id,
-                  referenceId: subscription.referenceId,
-                  dbPlan: subscription.plan,
-                  planFromStripe,
-                  priceId,
-                  status: subscription.status,
-                })
+              return {
+                params: {
+                  allow_promotion_codes: true,
+                },
+              }
+            },
+            onSubscriptionComplete: async ({
+              stripeSubscription,
+              subscription,
+            }: {
+              event: Stripe.Event
+              stripeSubscription: Stripe.Subscription
+              subscription: any
+            }) => {
+              const { priceId, planFromStripe, isTeamPlan } =
+                resolvePlanFromStripeSubscription(stripeSubscription)
 
-                const subscriptionForOrgCreation = isTeamPlan
-                  ? { ...subscription, plan: 'team' }
-                  : subscription
+              logger.info('[onSubscriptionComplete] Subscription created', {
+                subscriptionId: subscription.id,
+                referenceId: subscription.referenceId,
+                dbPlan: subscription.plan,
+                planFromStripe,
+                priceId,
+                status: subscription.status,
+              })
 
-                let resolvedSubscription = subscription
-                try {
-                  resolvedSubscription = await ensureOrganizationForTeamSubscription(
-                    subscriptionForOrgCreation
-                  )
-                } catch (orgError) {
-                  logger.error(
-                    '[onSubscriptionComplete] Failed to ensure organization for team subscription',
-                    {
-                      subscriptionId: subscription.id,
-                      referenceId: subscription.referenceId,
-                      dbPlan: subscription.plan,
-                      planFromStripe,
-                      error: orgError instanceof Error ? orgError.message : String(orgError),
-                      stack: orgError instanceof Error ? orgError.stack : undefined,
-                    }
-                  )
-                  throw orgError
-                }
+              const subscriptionForOrgCreation = isTeamPlan
+                ? { ...subscription, plan: 'team' }
+                : subscription
 
-                await handleSubscriptionCreated(resolvedSubscription)
-
-                await syncSubscriptionUsageLimits(resolvedSubscription)
-
-                await sendPlanWelcomeEmail(resolvedSubscription)
-              },
-              onSubscriptionUpdate: async ({
-                event,
-                subscription,
-              }: {
-                event: Stripe.Event
-                subscription: any
-              }) => {
-                const stripeSubscription = event.data.object as Stripe.Subscription
-                const { priceId, planFromStripe, isTeamPlan } =
-                  resolvePlanFromStripeSubscription(stripeSubscription)
-
-                if (priceId && !planFromStripe) {
-                  logger.warn(
-                    '[onSubscriptionUpdate] Could not determine plan from Stripe price ID',
-                    {
-                      subscriptionId: subscription.id,
-                      priceId,
-                      dbPlan: subscription.plan,
-                    }
-                  )
-                }
-
-                const isUpgradeToTeam =
-                  isTeamPlan &&
-                  subscription.plan !== 'team' &&
-                  !subscription.referenceId.startsWith('org_')
-
-                const effectivePlanForTeamFeatures = planFromStripe ?? subscription.plan
-
-                logger.info('[onSubscriptionUpdate] Subscription updated', {
-                  subscriptionId: subscription.id,
-                  status: subscription.status,
-                  dbPlan: subscription.plan,
-                  planFromStripe,
-                  isUpgradeToTeam,
-                  referenceId: subscription.referenceId,
-                })
-
-                const subscriptionForOrgCreation = isUpgradeToTeam
-                  ? { ...subscription, plan: 'team' }
-                  : subscription
-
-                let resolvedSubscription = subscription
-                try {
-                  resolvedSubscription = await ensureOrganizationForTeamSubscription(
-                    subscriptionForOrgCreation
-                  )
-
-                  if (isUpgradeToTeam) {
-                    logger.info(
-                      '[onSubscriptionUpdate] Detected Pro -> Team upgrade, ensured organization creation',
-                      {
-                        subscriptionId: subscription.id,
-                        originalPlan: subscription.plan,
-                        newPlan: planFromStripe,
-                        resolvedReferenceId: resolvedSubscription.referenceId,
-                      }
-                    )
+              let resolvedSubscription = subscription
+              try {
+                resolvedSubscription = await ensureOrganizationForTeamSubscription(
+                  subscriptionForOrgCreation
+                )
+              } catch (orgError) {
+                logger.error(
+                  '[onSubscriptionComplete] Failed to ensure organization for team subscription',
+                  {
+                    subscriptionId: subscription.id,
+                    referenceId: subscription.referenceId,
+                    dbPlan: subscription.plan,
+                    planFromStripe,
+                    error: orgError instanceof Error ? orgError.message : String(orgError),
+                    stack: orgError instanceof Error ? orgError.stack : undefined,
                   }
-                } catch (orgError) {
-                  logger.error(
-                    '[onSubscriptionUpdate] Failed to ensure organization for team subscription',
+                )
+                throw orgError
+              }
+
+              await handleSubscriptionCreated(resolvedSubscription)
+
+              await syncSubscriptionUsageLimits(resolvedSubscription)
+
+              await sendPlanWelcomeEmail(resolvedSubscription)
+            },
+            onSubscriptionUpdate: async ({
+              event,
+              subscription,
+            }: {
+              event: Stripe.Event
+              subscription: any
+            }) => {
+              const stripeSubscription = event.data.object as Stripe.Subscription
+              const { priceId, planFromStripe, isTeamPlan } =
+                resolvePlanFromStripeSubscription(stripeSubscription)
+
+              if (priceId && !planFromStripe) {
+                logger.warn(
+                  '[onSubscriptionUpdate] Could not determine plan from Stripe price ID',
+                  {
+                    subscriptionId: subscription.id,
+                    priceId,
+                    dbPlan: subscription.plan,
+                  }
+                )
+              }
+
+              const isUpgradeToTeam =
+                isTeamPlan &&
+                subscription.plan !== 'team' &&
+                !subscription.referenceId.startsWith('org_')
+
+              const effectivePlanForTeamFeatures = planFromStripe ?? subscription.plan
+
+              logger.info('[onSubscriptionUpdate] Subscription updated', {
+                subscriptionId: subscription.id,
+                status: subscription.status,
+                dbPlan: subscription.plan,
+                planFromStripe,
+                isUpgradeToTeam,
+                referenceId: subscription.referenceId,
+              })
+
+              const subscriptionForOrgCreation = isUpgradeToTeam
+                ? { ...subscription, plan: 'team' }
+                : subscription
+
+              let resolvedSubscription = subscription
+              try {
+                resolvedSubscription = await ensureOrganizationForTeamSubscription(
+                  subscriptionForOrgCreation
+                )
+
+                if (isUpgradeToTeam) {
+                  logger.info(
+                    '[onSubscriptionUpdate] Detected Pro -> Team upgrade, ensured organization creation',
                     {
                       subscriptionId: subscription.id,
-                      referenceId: subscription.referenceId,
-                      dbPlan: subscription.plan,
-                      planFromStripe,
-                      isUpgradeToTeam,
-                      error: orgError instanceof Error ? orgError.message : String(orgError),
-                      stack: orgError instanceof Error ? orgError.stack : undefined,
+                      originalPlan: subscription.plan,
+                      newPlan: planFromStripe,
+                      resolvedReferenceId: resolvedSubscription.referenceId,
                     }
                   )
-                  throw orgError
                 }
+              } catch (orgError) {
+                logger.error(
+                  '[onSubscriptionUpdate] Failed to ensure organization for team subscription',
+                  {
+                    subscriptionId: subscription.id,
+                    referenceId: subscription.referenceId,
+                    dbPlan: subscription.plan,
+                    planFromStripe,
+                    isUpgradeToTeam,
+                    error: orgError instanceof Error ? orgError.message : String(orgError),
+                    stack: orgError instanceof Error ? orgError.stack : undefined,
+                  }
+                )
+                throw orgError
+              }
 
+              try {
+                await syncSubscriptionUsageLimits(resolvedSubscription)
+              } catch (error) {
+                logger.error('[onSubscriptionUpdate] Failed to sync usage limits', {
+                  subscriptionId: resolvedSubscription.id,
+                  referenceId: resolvedSubscription.referenceId,
+                  error,
+                })
+              }
+
+              if (effectivePlanForTeamFeatures === 'team') {
                 try {
-                  await syncSubscriptionUsageLimits(resolvedSubscription)
+                  const quantity = stripeSubscription.items?.data?.[0]?.quantity || 1
+
+                  const result = await syncSeatsFromStripeQuantity(
+                    resolvedSubscription.id,
+                    resolvedSubscription.seats ?? null,
+                    quantity
+                  )
+
+                  if (result.synced) {
+                    logger.info('[onSubscriptionUpdate] Synced seat count from Stripe', {
+                      subscriptionId: resolvedSubscription.id,
+                      referenceId: resolvedSubscription.referenceId,
+                      previousSeats: result.previousSeats,
+                      newSeats: result.newSeats,
+                    })
+                  }
                 } catch (error) {
-                  logger.error('[onSubscriptionUpdate] Failed to sync usage limits', {
+                  logger.error('[onSubscriptionUpdate] Failed to sync seat count', {
                     subscriptionId: resolvedSubscription.id,
                     referenceId: resolvedSubscription.referenceId,
                     error,
                   })
                 }
-
-                if (effectivePlanForTeamFeatures === 'team') {
-                  try {
-                    const quantity = stripeSubscription.items?.data?.[0]?.quantity || 1
-
-                    const result = await syncSeatsFromStripeQuantity(
-                      resolvedSubscription.id,
-                      resolvedSubscription.seats ?? null,
-                      quantity
-                    )
-
-                    if (result.synced) {
-                      logger.info('[onSubscriptionUpdate] Synced seat count from Stripe', {
-                        subscriptionId: resolvedSubscription.id,
-                        referenceId: resolvedSubscription.referenceId,
-                        previousSeats: result.previousSeats,
-                        newSeats: result.newSeats,
-                      })
-                    }
-                  } catch (error) {
-                    logger.error('[onSubscriptionUpdate] Failed to sync seat count', {
-                      subscriptionId: resolvedSubscription.id,
-                      referenceId: resolvedSubscription.referenceId,
-                      error,
-                    })
-                  }
-                }
-              },
-              onSubscriptionDeleted: async ({
-                subscription,
-              }: {
-                event: Stripe.Event
-                stripeSubscription: Stripe.Subscription
-                subscription: any
-              }) => {
-                logger.info('[onSubscriptionDeleted] Subscription deleted', {
-                  subscriptionId: subscription.id,
-                  referenceId: subscription.referenceId,
-                })
-
-                try {
-                  await handleSubscriptionDeleted(subscription)
-                } catch (error) {
-                  logger.error('[onSubscriptionDeleted] Failed to handle subscription deletion', {
-                    subscriptionId: subscription.id,
-                    referenceId: subscription.referenceId,
-                    error,
-                  })
-                }
-              },
+              }
             },
-            onEvent: async (event: Stripe.Event) => {
-              logger.info('[onEvent] Received Stripe webhook', {
-                eventId: event.id,
-                eventType: event.type,
+            onSubscriptionDeleted: async ({
+              subscription,
+            }: {
+              event: Stripe.Event
+              stripeSubscription: Stripe.Subscription
+              subscription: any
+            }) => {
+              logger.info('[onSubscriptionDeleted] Subscription deleted', {
+                subscriptionId: subscription.id,
+                referenceId: subscription.referenceId,
               })
 
               try {
-                switch (event.type) {
-                  case 'invoice.payment_succeeded': {
-                    await handleInvoicePaymentSucceeded(event)
-                    break
-                  }
-                  case 'invoice.payment_failed': {
-                    await handleInvoicePaymentFailed(event)
-                    break
-                  }
-                  case 'invoice.finalized': {
-                    await handleInvoiceFinalized(event)
-                    break
-                  }
-                  case 'customer.subscription.created': {
-                    await handleManualEnterpriseSubscription(event)
-                    break
-                  }
-                  case 'charge.dispute.created': {
-                    await handleChargeDispute(event)
-                    break
-                  }
-                  case 'charge.dispute.closed': {
-                    await handleDisputeClosed(event)
-                    break
-                  }
-                  default:
-                    logger.info('[onEvent] Ignoring unsupported webhook event', {
-                      eventId: event.id,
-                      eventType: event.type,
-                    })
-                    break
-                }
-
-                logger.info('[onEvent] Successfully processed webhook', {
-                  eventId: event.id,
-                  eventType: event.type,
-                })
+                await handleSubscriptionDeleted(subscription)
               } catch (error) {
-                logger.error('[onEvent] Failed to process webhook', {
-                  eventId: event.id,
-                  eventType: event.type,
+                logger.error('[onSubscriptionDeleted] Failed to handle subscription deletion', {
+                  subscriptionId: subscription.id,
+                  referenceId: subscription.referenceId,
                   error,
                 })
-                throw error
               }
             },
-          }),
-        ]
+          },
+          onEvent: async (event: Stripe.Event) => {
+            logger.info('[onEvent] Received Stripe webhook', {
+              eventId: event.id,
+              eventType: event.type,
+            })
+
+            try {
+              switch (event.type) {
+                case 'invoice.payment_succeeded': {
+                  await handleInvoicePaymentSucceeded(event)
+                  break
+                }
+                case 'invoice.payment_failed': {
+                  await handleInvoicePaymentFailed(event)
+                  break
+                }
+                case 'invoice.finalized': {
+                  await handleInvoiceFinalized(event)
+                  break
+                }
+                case 'customer.subscription.created': {
+                  await handleManualEnterpriseSubscription(event)
+                  break
+                }
+                case 'charge.dispute.created': {
+                  await handleChargeDispute(event)
+                  break
+                }
+                case 'charge.dispute.closed': {
+                  await handleDisputeClosed(event)
+                  break
+                }
+                default:
+                  logger.info('[onEvent] Ignoring unsupported webhook event', {
+                    eventId: event.id,
+                    eventType: event.type,
+                  })
+                  break
+              }
+
+              logger.info('[onEvent] Successfully processed webhook', {
+                eventId: event.id,
+                eventType: event.type,
+              })
+            } catch (error) {
+              logger.error('[onEvent] Failed to process webhook', {
+                eventId: event.id,
+                eventType: event.type,
+                error,
+              })
+              throw error
+            }
+          },
+        }),
+      ]
       : []),
     ...(isOrganizationsEnabled
       ? [
-          organization({
-            allowUserToCreateOrganization: async (user) => {
-              if (!isBillingEnabled) {
-                return true
-              }
-              const dbSubscriptions = await db
-                .select()
-                .from(schema.subscription)
-                .where(eq(schema.subscription.referenceId, user.id))
+        organization({
+          allowUserToCreateOrganization: async (user) => {
+            if (!isBillingEnabled) {
+              return true
+            }
+            const dbSubscriptions = await db
+              .select()
+              .from(schema.subscription)
+              .where(eq(schema.subscription.referenceId, user.id))
 
-              const hasTeamPlan = dbSubscriptions.some(
-                (sub) =>
-                  sub.status === 'active' && (sub.plan === 'team' || sub.plan === 'enterprise')
-              )
+            const hasTeamPlan = dbSubscriptions.some(
+              (sub) =>
+                sub.status === 'active' && (sub.plan === 'team' || sub.plan === 'enterprise')
+            )
 
-              return hasTeamPlan
+            return hasTeamPlan
+          },
+          organizationCreation: {
+            afterCreate: async ({ organization, user }) => {
+              logger.info('[organizationCreation.afterCreate] Organization created', {
+                organizationId: organization.id,
+                creatorId: user.id,
+              })
             },
-            organizationCreation: {
-              afterCreate: async ({ organization, user }) => {
-                logger.info('[organizationCreation.afterCreate] Organization created', {
-                  organizationId: organization.id,
-                  creatorId: user.id,
-                })
-              },
-            },
-          }),
-        ]
+          },
+        }),
+      ]
       : []),
   ],
   pages: {

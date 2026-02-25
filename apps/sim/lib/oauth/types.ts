@@ -43,6 +43,7 @@ export type OAuthProvider =
   | 'spotify'
   | 'calcom'
   | 'webex'
+  | 'facebook'
 
 export type OAuthService =
   | 'google'
@@ -85,6 +86,7 @@ export type OAuthService =
   | 'spotify'
   | 'calcom'
   | 'webex'
+  | 'facebook'
 
 export interface OAuthProviderConfig {
   name: string

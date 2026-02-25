@@ -969,6 +969,21 @@ export function LinkedInIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function FacebookIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      fill='currentColor'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path d='M24 12.073C24 5.403 18.627 0 12 0S0 5.403 0 12.073c0 6.017 4.388 11.013 10.125 11.927v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.927-1.956 1.877v2.255h3.328l-.532 3.49H13.875v8.437C19.612 23.086 24 18.09 24 12.073z' />
+    </svg>
+  )
+}
+
 export function CrunchbaseIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
