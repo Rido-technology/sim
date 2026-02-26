@@ -25,12 +25,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const requestId = generateRequestId()
   const { path } = await params
 
+  const url = new URL(request.url)
+  logger.info(`[${requestId}] GET webhook verification request`, {
+    path,
+    searchParams: Object.fromEntries(url.searchParams.entries()),
+    headers: Object.fromEntries(request.headers.entries()),
+  })
+
   // Handle provider-specific GET verifications (Microsoft Graph, WhatsApp, etc.)
   const challengeResponse = await handleProviderChallenges({}, request, requestId, path)
   if (challengeResponse) {
+    logger.info(`[${requestId}] Returning challenge response`, {
+      status: challengeResponse.status,
+    })
     return challengeResponse
   }
 
+  logger.warn(`[${requestId}] No challenge handler matched, returning 405`)
   return new NextResponse('Method not allowed', { status: 405 })
 }
 
@@ -40,6 +51,14 @@ export async function POST(
 ) {
   const requestId = generateRequestId()
   const { path } = await params
+
+  const url = new URL(request.url)
+  logger.info(`[${requestId}] POST webhook request received`, {
+    path,
+    searchParams: Object.fromEntries(url.searchParams.entries()),
+    headers: Object.fromEntries(request.headers.entries()),
+    contentType: request.headers.get('content-type'),
+  })
 
   // Handle provider challenges before body parsing (Microsoft Graph validationToken, etc.)
   const earlyChallenge = await handleProviderChallenges({}, request, requestId, path)
@@ -55,6 +74,12 @@ export async function POST(
   }
 
   const { body, rawBody } = parseResult
+
+  logger.info(`[${requestId}] Webhook body parsed successfully`, {
+    bodyKeys: Object.keys(body),
+    bodyPreview: JSON.stringify(body).slice(0, 500),
+    bodySize: rawBody.length,
+  })
 
   const challengeResponse = await handleProviderChallenges(body, request, requestId, path)
   if (challengeResponse) {
@@ -158,7 +183,8 @@ export async function POST(
 
   // Return the last successful response, or a combined response for multiple webhooks
   if (responses.length === 0) {
-    return new NextResponse('No webhooks processed successfully', { status: 500 })
+    logger.info(`[${requestId}] All webhooks filtered/skipped for path: ${path}`)
+    return NextResponse.json({ message: 'Webhook received but filtered by event type' })
   }
 
   if (responses.length === 1) {

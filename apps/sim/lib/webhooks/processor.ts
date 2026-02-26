@@ -11,10 +11,12 @@ import { getEffectiveDecryptedEnv } from '@/lib/environment/utils'
 import { preprocessExecution } from '@/lib/execution/preprocessing'
 import { convertSquareBracketsToTwiML } from '@/lib/webhooks/utils'
 import {
+  handleFacebookVerification,
   handleSlackChallenge,
   handleWhatsAppVerification,
   validateCalcomSignature,
   validateCirclebackSignature,
+  validateFacebookSignature,
   validateFirefliesSignature,
   validateGitHubSignature,
   validateJiraSignature,
@@ -183,6 +185,11 @@ export async function handleProviderChallenges(
     return whatsAppResponse
   }
 
+  const facebookResponse = await handleFacebookVerification(requestId, path, mode, token, challenge)
+  if (facebookResponse) {
+    return facebookResponse
+  }
+
   return null
 }
 
@@ -256,6 +263,33 @@ export function shouldSkipWebhookEvent(webhook: any, body: any, requestId: strin
       if (eventType && !eventTypes.includes(eventType)) {
         logger.info(
           `[${requestId}] Grain event type '${eventType}' not in allowed list for webhook ${webhook.id}, skipping`
+        )
+        return true
+      }
+    }
+  }
+
+  // Facebook: only process new comments, optionally filtered by post ID
+  if (webhook.provider === 'facebook') {
+    const change = body?.entry?.[0]?.changes?.[0]?.value || {}
+    const item = change.item
+    const verb = change.verb
+
+    // Skip everything that is not a brand-new comment
+    if (item !== 'comment' || verb !== 'add') {
+      logger.info(
+        `[${requestId}] Facebook event skipped (item=${item}, verb=${verb}) — only new comments are processed`
+      )
+      return true
+    }
+
+    // If a post ID filter is configured, skip comments on other posts
+    const filterPostId = providerConfig.filterPostId as string | undefined
+    if (filterPostId && filterPostId.trim()) {
+      const postId = change.post_id || ''
+      if (postId !== filterPostId.trim()) {
+        logger.info(
+          `[${requestId}] Facebook comment on post '${postId}' skipped — filter is '${filterPostId}'`
         )
         return true
       }
@@ -506,6 +540,24 @@ export async function verifyProviderAuth(
   const providerVerification = verifyProviderWebhook(foundWebhook, request, requestId)
   if (providerVerification) {
     return providerVerification
+  }
+
+  // Facebook payload signature validation (X-Hub-Signature-256)
+  if (foundWebhook.provider === 'facebook') {
+    const appSecret = providerConfig.appSecret as string | undefined
+    if (appSecret) {
+      const signatureHeader = request.headers.get('x-hub-signature-256') || ''
+      if (!signatureHeader) {
+        logger.warn(`[${requestId}] Facebook webhook missing X-Hub-Signature-256 header`)
+        return new NextResponse('Unauthorized - Missing signature', { status: 401 })
+      }
+      const isValid = validateFacebookSignature(appSecret, rawBody, signatureHeader)
+      if (!isValid) {
+        logger.warn(`[${requestId}] Facebook webhook signature verification failed`)
+        return new NextResponse('Unauthorized - Invalid signature', { status: 401 })
+      }
+      logger.debug(`[${requestId}] Facebook X-Hub-Signature-256 verified successfully`)
+    }
   }
 
   // Handle Google Forms shared-secret authentication (Apps Script forwarder)

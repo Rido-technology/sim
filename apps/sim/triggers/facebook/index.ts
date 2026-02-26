@@ -1,0 +1,1 @@
+export { facebookWebhookTrigger } from './webhook'

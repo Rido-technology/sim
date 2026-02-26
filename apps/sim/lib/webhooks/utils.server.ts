@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { db, workflowDeploymentVersion } from '@sim/db'
+import { db, workflowDeploymentVersion, workflow } from '@sim/db'
 import { account, webhook } from '@sim/db/schema'
 import { createLogger } from '@sim/logger'
 import { and, eq, isNull, or } from 'drizzle-orm'
@@ -13,7 +13,9 @@ import {
 } from '@/lib/core/security/input-validation.server'
 import { sanitizeUrlForLog } from '@/lib/core/utils/logging'
 import type { DbOrTx } from '@/lib/db/types'
+import { getEffectiveDecryptedEnv } from '@/lib/environment/utils'
 import { getProviderIdFromServiceId } from '@/lib/oauth'
+import { resolveEnvVarReferences } from '@/executor/utils/reference-validation'
 import {
   getCredentialsForCredentialSet,
   refreshAccessTokenIfNeeded,
@@ -32,7 +34,7 @@ export async function handleWhatsAppVerification(
   challenge: string | null
 ): Promise<NextResponse | null> {
   if (mode && token && challenge) {
-    logger.info(`[${requestId}] WhatsApp verification request received for path: ${path}`)
+    logger.debug(`[${requestId}] Checking for WhatsApp webhook at path: ${path}`)
 
     if (mode !== 'subscribe') {
       logger.warn(`[${requestId}] Invalid WhatsApp verification mode: ${mode}`)
@@ -51,6 +53,7 @@ export async function handleWhatsAppVerification(
       )
       .where(
         and(
+          eq(webhook.path, path),
           eq(webhook.provider, 'whatsapp'),
           eq(webhook.isActive, true),
           or(
@@ -59,6 +62,14 @@ export async function handleWhatsAppVerification(
           )
         )
       )
+
+    // If no WhatsApp webhook found for this path, return null to let other handlers try
+    if (webhooks.length === 0) {
+      logger.debug(`[${requestId}] No WhatsApp webhook found for path: ${path}`)
+      return null
+    }
+
+    logger.info(`[${requestId}] WhatsApp verification request received for path: ${path}`)
 
     for (const row of webhooks) {
       const wh = row.webhook
@@ -86,6 +97,145 @@ export async function handleWhatsAppVerification(
   }
 
   return null
+}
+
+/**
+ * Handle Facebook Page Webhook verification requests.
+ * Facebook uses the same hub.mode / hub.verify_token / hub.challenge protocol as WhatsApp.
+ */
+export async function handleFacebookVerification(
+  requestId: string,
+  path: string,
+  mode: string | null,
+  token: string | null,
+  challenge: string | null
+): Promise<NextResponse | null> {
+  if (mode && token && challenge) {
+    logger.info(`[${requestId}] Facebook webhook verification request received`, {
+      path,
+      mode,
+      tokenReceived: token,
+      challengeReceived: challenge,
+    })
+
+    if (mode !== 'subscribe') {
+      logger.warn(`[${requestId}] Invalid Facebook verification mode: ${mode}`)
+      return new NextResponse('Invalid mode', { status: 400 })
+    }
+
+    const webhooks = await db
+      .select({ webhook, workflow })
+      .from(webhook)
+      .innerJoin(workflow, eq(webhook.workflowId, workflow.id))
+      .leftJoin(
+        workflowDeploymentVersion,
+        and(
+          eq(workflowDeploymentVersion.workflowId, webhook.workflowId),
+          eq(workflowDeploymentVersion.isActive, true)
+        )
+      )
+      .where(
+        and(
+          eq(webhook.path, path),
+          eq(webhook.provider, 'facebook'),
+          eq(webhook.isActive, true),
+          or(
+            eq(webhook.deploymentVersionId, workflowDeploymentVersion.id),
+            and(isNull(workflowDeploymentVersion.id), isNull(webhook.deploymentVersionId))
+          )
+        )
+      )
+
+    logger.info(`[${requestId}] Found ${webhooks.length} matching Facebook webhooks for path: ${path}`)
+
+    for (const row of webhooks) {
+      const wh = row.webhook
+      const wf = row.workflow
+      
+      logger.info(`[${requestId}] Processing webhook ${wh.id}`, {
+        webhookId: wh.id,
+        workflowId: wf.id,
+        provider: wh.provider,
+        isActive: wh.isActive,
+        hasProviderConfig: !!wh.providerConfig,
+      })
+      
+      // Fetch and decrypt environment variables
+      let decryptedEnvVars: Record<string, string> = {}
+      try {
+        decryptedEnvVars = await getEffectiveDecryptedEnv(wf.userId, wf.workspaceId)
+        logger.info(`[${requestId}] Loaded ${Object.keys(decryptedEnvVars).length} environment variables`)
+      } catch (error) {
+        logger.error(`[${requestId}] Failed to fetch environment variables for webhook ${wh.id}`, { error })
+      }
+      
+      // Resolve {{VARIABLE}} references in providerConfig
+      const rawProviderConfig = (wh.providerConfig as Record<string, any>) || {}
+      const resolvedConfig: Record<string, any> = {}
+      for (const [key, value] of Object.entries(rawProviderConfig)) {
+        if (typeof value === 'string') {
+          resolvedConfig[key] = resolveEnvVarReferences(value, decryptedEnvVars) as string
+        } else {
+          resolvedConfig[key] = value
+        }
+      }
+      
+      const verificationToken = resolvedConfig.verificationToken
+
+      logger.info(`[${requestId}] Token comparison for webhook ${wh.id}`, {
+        webhookId: wh.id,
+        hasVerificationToken: !!verificationToken,
+        rawVerificationToken: rawProviderConfig.verificationToken,
+        resolvedVerificationToken: verificationToken,
+        receivedToken: token,
+        tokensMatch: token === verificationToken,
+      })
+
+      if (!verificationToken) {
+        logger.warn(`[${requestId}] Facebook webhook ${wh.id} has no verification token, skipping`)
+        continue
+      }
+
+      if (token === verificationToken) {
+        logger.info(`[${requestId}] Facebook webhook verification successful for webhook ${wh.id}`)
+        return new NextResponse(challenge, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain' },
+        })
+      } else {
+        logger.warn(`[${requestId}] Token mismatch for webhook ${wh.id}`, {
+          expected: verificationToken,
+          received: token,
+        })
+      }
+    }
+
+    logger.warn(`[${requestId}] No matching Facebook verification token found`, {
+      path,
+      totalWebhooksChecked: webhooks.length,
+      receivedToken: token,
+    })
+    return new NextResponse('Verification failed', { status: 403 })
+  }
+
+  return null
+}
+
+/**
+ * Validate a Facebook X-Hub-Signature-256 header.
+ * @param appSecret - The Facebook App Secret
+ * @param rawBody - The raw request body string
+ * @param signature - The full header value (e.g. "sha256=abc123...")
+ */
+export function validateFacebookSignature(
+  appSecret: string,
+  rawBody: string,
+  signature: string
+): boolean {
+  const hmac = crypto.createHmac('sha256', appSecret)
+  hmac.update(rawBody)
+  const expected = `sha256=${hmac.digest('hex')}`
+  return safeCompare(signature, expected)
 }
 
 /**
@@ -1167,7 +1317,74 @@ export async function formatWebhookInput(
     }
   }
 
+  if (foundWebhook.provider === 'facebook') {
+    const entry = body?.entry?.[0]
+    const change = entry?.changes?.[0]
+    const value = change?.value || {}
+
+    return {
+      item: value.item || '',
+      verb: value.verb || '',
+      commentId: value.comment_id || '',
+      postId: value.post_id || '',
+      pageId: entry?.id || '',
+      fromId: value.from?.id || '',
+      fromName: value.from?.name || '',
+      message: value.message || '',
+      createdTime: String(value.created_time || ''),
+      raw: body,
+    }
+  }
+
   return body
+}
+
+/**
+ * Automatically reply to a Facebook comment using the Graph API.
+ * Called during webhook execution when `autoReplyMessage` and `pageAccessToken` are configured.
+ */
+export async function handleFacebookAutoReply(
+  commentId: string,
+  replyMessage: string,
+  pageAccessToken: string,
+  requestId: string
+): Promise<void> {
+  if (!commentId || !replyMessage || !pageAccessToken) {
+    logger.debug(`[${requestId}] Facebook auto-reply skipped: missing commentId, message, or token`)
+    return
+  }
+
+  try {
+    const url = `https://graph.facebook.com/v19.0/${commentId}/comments`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: replyMessage,
+        access_token: pageAccessToken,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      logger.error(`[${requestId}] Facebook auto-reply failed`, {
+        status: response.status,
+        error: data?.error?.message,
+        commentId,
+      })
+    } else {
+      logger.info(`[${requestId}] Facebook auto-reply sent`, {
+        commentId,
+        replyId: data.id,
+      })
+    }
+  } catch (error) {
+    logger.error(`[${requestId}] Facebook auto-reply exception`, {
+      error: error instanceof Error ? error.message : String(error),
+      commentId,
+    })
+  }
 }
 
 /**
@@ -1465,6 +1682,8 @@ export function verifyProviderWebhook(
   const authHeader = request.headers.get('authorization')
   const providerConfig = (foundWebhook.providerConfig as Record<string, any>) || {}
   switch (foundWebhook.provider) {
+    case 'facebook':
+      break
     case 'github':
       break
     case 'stripe':

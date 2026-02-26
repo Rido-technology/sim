@@ -2,6 +2,7 @@ import { FacebookIcon } from '@/components/icons'
 import type { BlockConfig } from '@/blocks/types'
 import { AuthMode } from '@/blocks/types'
 import type { FacebookResponse } from '@/tools/facebook/types'
+import { getTrigger } from '@/triggers'
 
 export const FacebookBlock: BlockConfig<FacebookResponse> = {
   type: 'facebook',
@@ -14,6 +15,7 @@ export const FacebookBlock: BlockConfig<FacebookResponse> = {
   category: 'tools',
   bgColor: '#1877F2',
   icon: FacebookIcon,
+  triggerAllowed: true,
   subBlocks: [
     {
       id: 'operation',
@@ -82,6 +84,7 @@ export const FacebookBlock: BlockConfig<FacebookResponse> = {
       },
       required: true,
     },
+    ...getTrigger('facebook_webhook').subBlocks,
   ],
   tools: {
     access: [
@@ -138,5 +141,18 @@ export const FacebookBlock: BlockConfig<FacebookResponse> = {
     deleted: { type: 'boolean', description: 'Whether the post was successfully deleted' },
     success: { type: 'boolean', description: 'Operation success status' },
     error: { type: 'string', description: 'Error message if operation failed' },
+    // Webhook trigger outputs
+    item: { type: 'string', description: 'Type of feed event (comment, post, like, etc.)' },
+    verb: { type: 'string', description: 'Action performed (add, edited, remove)' },
+    commentId: { type: 'string', description: 'ID of the comment' },
+    fromId: { type: 'string', description: 'User ID who triggered the event' },
+    fromName: { type: 'string', description: 'Name of the person who triggered the event' },
+    message: { type: 'string', description: 'Text content of the comment or post' },
+    createdTime: { type: 'string', description: 'Unix timestamp when the event was created' },
+    raw: { type: 'json', description: 'Full raw webhook payload from Facebook' },
+  },
+  triggers: {
+    enabled: true,
+    available: ['facebook_webhook'],
   },
 }

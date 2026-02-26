@@ -16,7 +16,7 @@ import { processExecutionFiles } from '@/lib/execution/files'
 import { LoggingSession } from '@/lib/logs/execution/logging-session'
 import { buildTraceSpans } from '@/lib/logs/execution/trace-spans/trace-spans'
 import { WebhookAttachmentProcessor } from '@/lib/webhooks/attachment-processor'
-import { fetchAndProcessAirtablePayloads, formatWebhookInput } from '@/lib/webhooks/utils.server'
+import { fetchAndProcessAirtablePayloads, formatWebhookInput, handleFacebookAutoReply } from '@/lib/webhooks/utils.server'
 import { executeWorkflowCore } from '@/lib/workflows/executor/execution-core'
 import { PauseResumeManager } from '@/lib/workflows/executor/human-in-the-loop-manager'
 import { loadDeployedWorkflowState } from '@/lib/workflows/persistence/utils'
@@ -409,6 +409,18 @@ async function executeWebhookJobInternal(
         executionId,
         output: { message: 'No messages in WhatsApp payload' },
         executedAt: new Date().toISOString(),
+      }
+    }
+
+    // Facebook auto-reply: post reply to comment before running the workflow
+    if (payload.provider === 'facebook' && input) {
+      const webhookProviderConfig = (actualWebhook?.providerConfig as Record<string, any>) || {}
+      const autoReplyMessage = webhookProviderConfig.autoReplyMessage as string | undefined
+      const pageAccessToken = webhookProviderConfig.pageAccessToken as string | undefined
+      const commentId = input.commentId as string | undefined
+
+      if (autoReplyMessage?.trim() && pageAccessToken?.trim() && commentId) {
+        await handleFacebookAutoReply(commentId, autoReplyMessage.trim(), pageAccessToken.trim(), requestId)
       }
     }
 

@@ -833,7 +833,7 @@ export const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
         providerId: 'facebook',
         icon: FacebookIcon,
         baseProviderIcon: FacebookIcon,
-        scopes: ['pages_manage_posts', 'pages_read_engagement', 'pages_show_list'],
+        scopes: ['pages_manage_posts', 'pages_read_engagement', 'pages_show_list', 'pages_manage_metadata'],
       },
     },
     defaultService: 'facebook',

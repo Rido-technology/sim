@@ -21,6 +21,7 @@ import {
   circlebackMeetingNotesTrigger,
   circlebackWebhookTrigger,
 } from '@/triggers/circleback'
+import { facebookWebhookTrigger } from '@/triggers/facebook'
 import { firefliesTranscriptionCompleteTrigger } from '@/triggers/fireflies'
 import { genericWebhookTrigger } from '@/triggers/generic'
 import {
@@ -164,6 +165,7 @@ export const TRIGGER_REGISTRY: TriggerRegistry = {
   circleback_meeting_completed: circlebackMeetingCompletedTrigger,
   circleback_meeting_notes: circlebackMeetingNotesTrigger,
   circleback_webhook: circlebackWebhookTrigger,
+  facebook_webhook: facebookWebhookTrigger,
   jira_webhook: jiraWebhookTrigger,
   jira_issue_created: jiraIssueCreatedTrigger,
   jira_issue_updated: jiraIssueUpdatedTrigger,

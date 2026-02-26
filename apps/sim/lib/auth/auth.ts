@@ -2481,6 +2481,7 @@ export const auth = betterAuth({
             'pages_manage_posts',
             'pages_read_engagement',
             'pages_show_list',
+            'pages_manage_metadata',
           ],
           responseType: 'code',
           authentication: 'body',
