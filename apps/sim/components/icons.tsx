@@ -3262,26 +3262,26 @@ export function MicrosoftPlannerIcon(props: SVGProps<SVGSVGElement>) {
 
 export function MicrosoftOneNoteIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      {...props}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M20 2H8C6.9 2 6 2.9 6 4V20C6 21.1 6.9 22 8 22H20C21.1 22 22 21.1 22 20V4C22 2.9 21.1 2 20 2Z"
-        fill="#7719AA"
-      />
-      <path
-        d="M4 6H6V18H4C2.9 18 2 17.1 2 16V8C2 6.9 2.9 6 4 6Z"
-        fill="#CA5010"
-      />
-      <path
-        d="M14 7L10 17H12L16 7H14Z"
-        fill="white"
-      />
-      <circle cx="17" cy="12" r="1.5" fill="white" />
-    </svg>
+    <svg  
+    {...props}
+    viewBox="0 0 32 32" fill="none" 
+    xmlns="http://www.w3.org/2000/svg">
+      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+       stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
+         <path d="M8 23H32V28C32 29.1046 31.1046 30 30 30H10C8.89543 30 8 29.1046 8 28V23Z" fill="#5D29A1"></path> <rect x="8" y="16" width="24" height="7" fill="#7F32CC"></rect> <rect x="8" y="9" width="24"
+          height="7" fill="#9A40D6"></rect> 
+          <path d="M10 2C8.89543 2 8 2.89543 8 4V28C8 29.1046 8.89543 30 10 30H24V9H32V4C32 2.89543 31.1046 2 30 2H10Z" fill="url(#paint0_linear_87_7733)"></path> <path d="M8 12C8 10.3431 9.34315 9 11 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H8V12Z" fill="#000000" fill-opacity="0.3"></path> 
+          <rect y="7" width="18" height="18"
+           rx="2" fill="url(#paint1_linear_87_7733)"></rect>
+            <path d="M13 21V11H10.8893V16.8286L6.9631 11H5V21H7.08118V14.9571L11.155 21H13Z" fill="white"></path> <defs> <linearGradient id="paint0_linear_87_7733" x1="8" y1="16" x2="24.5" y2="16" gradientUnits="userSpaceOnUse"> <stop stop-color="#8C42AC"></stop>
+             <stop offset="1" stop-color="#C36DEF"></stop> </linearGradient>
+              <linearGradient id="paint1_linear_87_7733" x1="0" y1="16" 
+              x2="19" y2="16" gradientUnits="userSpaceOnUse"> 
+              <stop stop-color="#44176C"></stop> <stop offset="1" 
+              stop-color="#621F9C"></stop> </linearGradient> </defs> </g></svg>
+    
+   
   );
 }
 
