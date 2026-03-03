@@ -11,6 +11,7 @@ import { getEffectiveDecryptedEnv } from '@/lib/environment/utils'
 import { preprocessExecution } from '@/lib/execution/preprocessing'
 import { convertSquareBracketsToTwiML } from '@/lib/webhooks/utils'
 import {
+  handleInstagramVerification,
   handleSlackChallenge,
   handleWhatsAppVerification,
   validateCalcomSignature,
@@ -183,6 +184,17 @@ export async function handleProviderChallenges(
     return whatsAppResponse
   }
 
+  const instagramResponse = await handleInstagramVerification(
+    requestId,
+    path,
+    mode,
+    token,
+    challenge
+  )
+  if (instagramResponse) {
+    return instagramResponse
+  }
+
   return null
 }
 
@@ -276,7 +288,44 @@ export function shouldSkipWebhookEvent(webhook: any, body: any, requestId: strin
     }
   }
 
+  if (webhook.provider === 'instagram') {
+    const subscribedEvents = providerConfig.subscribedEvents
+    if (subscribedEvents && Array.isArray(subscribedEvents) && subscribedEvents.length > 0) {
+      const eventType = getInstagramWebhookEventType(body)
+      if (eventType && !subscribedEvents.includes(eventType)) {
+        logger.info(
+          `[${requestId}] Instagram event type '${eventType}' not in subscribed events for webhook ${webhook.id}, skipping`
+        )
+        return true
+      }
+    }
+  }
+
   return false
+}
+
+/**
+ * Detect Instagram webhook event type from raw Meta payload.
+ * Used for filtering by subscribedEvents (empty = listen to all).
+ */
+export function getInstagramWebhookEventType(body: any): string | undefined {
+  const entry = body?.entry?.[0]
+  if (!entry) return undefined
+  if (entry.changes && entry.changes[0]) return entry.changes[0].field
+  if (entry.standby && entry.standby.length > 0) return 'standby'
+  if (entry.messaging && entry.messaging[0]) {
+    const ev = entry.messaging[0]
+    if (ev.postback) return 'messaging_postbacks'
+    if (ev.reaction) return 'message_reactions'
+    if (ev.referral) return 'messaging_referral'
+    if (ev.read) return 'messaging_seen'
+    if (ev.message_edit) return 'message_edit'
+    if (ev.message) return 'messages'
+    if (ev.pass_thread_control || ev.take_thread_control || ev.request_thread_control)
+      return 'messaging_handover'
+    return 'messages'
+  }
+  return undefined
 }
 
 /** Providers that validate webhook URLs during creation, before workflow deployment */

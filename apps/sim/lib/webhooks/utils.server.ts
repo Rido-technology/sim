@@ -82,10 +82,75 @@ export async function handleWhatsAppVerification(
     }
 
     logger.warn(`[${requestId}] No matching WhatsApp verification token found`)
-    return new NextResponse('Verification failed', { status: 403 })
+    return null
   }
 
   return null
+}
+
+/**
+ * Handle Instagram (Meta) verification requests 
+ */
+export async function handleInstagramVerification(
+  requestId: string,
+  path: string,
+  mode: string | null,
+  token: string | null,
+  challenge: string | null
+): Promise<NextResponse | null> {
+  if (!mode || !token || !challenge) {
+    return null
+  }
+
+  logger.info(`[${requestId}] Instagram verification request received for path: ${path}`)
+
+  if (mode !== 'subscribe') {
+    logger.warn(`[${requestId}] Invalid Instagram verification mode: ${mode}`)
+    return new NextResponse('Invalid mode', { status: 400 })
+  }
+
+  const webhooks = await db
+    .select({ webhook })
+    .from(webhook)
+    .leftJoin(
+      workflowDeploymentVersion,
+      and(
+        eq(workflowDeploymentVersion.workflowId, webhook.workflowId),
+        eq(workflowDeploymentVersion.isActive, true)
+      )
+    )
+    .where(
+      and(
+        eq(webhook.provider, 'instagram'),
+        eq(webhook.isActive, true),
+        or(
+          eq(webhook.deploymentVersionId, workflowDeploymentVersion.id),
+          and(isNull(workflowDeploymentVersion.id), isNull(webhook.deploymentVersionId))
+        )
+      )
+    )
+
+  for (const row of webhooks) {
+    const wh = row.webhook
+    const providerConfig = (wh.providerConfig as Record<string, any>) || {}
+    const verificationToken = providerConfig.verificationToken
+
+    if (!verificationToken) {
+      logger.debug(`[${requestId}] Instagram webhook ${wh.id} has no verification token, skipping`)
+      continue
+    }
+
+    if (token === verificationToken) {
+      logger.info(`[${requestId}] Instagram verification successful for webhook ${wh.id}`)
+      return new NextResponse(challenge, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain' },
+      })
+    }
+  }
+
+  logger.warn(`[${requestId}] No matching Instagram verification token found`)
+  return new NextResponse('Verification failed', { status: 403 })
 }
 
 /**
@@ -706,6 +771,55 @@ export async function formatWebhookInput(
     return null
   }
 
+  if (foundWebhook.provider === 'instagram') {
+    const entry = body?.entry?.[0]
+    const change = entry?.changes?.[0]
+    if (change?.value) {
+      const value = change.value
+      const eventType = change.field ?? 'comments'
+      const fromId = value.from?.id ?? value.from
+      return {
+        messageId: value.id,
+        from: typeof fromId === 'string' ? fromId : String(fromId ?? ''),
+        text: value.text ?? null,
+        timestamp: value.timestamp ? String(value.timestamp) : undefined,
+        raw: body,
+        eventType,
+        commentId: value.id,
+        mediaId: value.media?.id,
+        parentId: value.parent_id,
+        username: value.from?.username,
+      }
+    }
+    const messaging = entry?.messaging || entry?.standby || []
+    const event = messaging[0]
+    if (event) {
+      const message = event.message
+      const senderId = event.sender?.id ?? event.sender
+      let eventType = 'messages'
+      if (entry.standby?.length) eventType = 'standby'
+      else if (event.postback) eventType = 'messaging_postbacks'
+      else if (event.reaction) eventType = 'message_reactions'
+      else if (event.referral) eventType = 'messaging_referral'
+      else if (event.read) eventType = 'messaging_seen'
+      else if (event.message_edit) eventType = 'message_edit'
+      else if (event.pass_thread_control || event.take_thread_control) eventType = 'messaging_handover'
+      return {
+        messageId: message?.mid ?? event.mid ?? event.id,
+        from: typeof senderId === 'string' ? senderId : String(senderId),
+        text: message?.text ?? null,
+        timestamp: event.timestamp ? String(event.timestamp) : undefined,
+        raw: body,
+        eventType,
+        commentId: message?.id ?? event.id,
+        mediaId: message?.media?.id,
+        parentId: message?.parent_id,
+        username: message?.from?.username,
+      }
+    }
+    return body
+  }
+
   if (foundWebhook.provider === 'telegram') {
     const rawMessage =
       body?.message || body?.edited_message || body?.channel_post || body?.edited_channel_post
@@ -751,13 +865,13 @@ export async function formatWebhookInput(
         },
         sender: rawMessage.from
           ? {
-              id: rawMessage.from.id,
-              username: rawMessage.from.username,
-              firstName: rawMessage.from.first_name,
-              lastName: rawMessage.from.last_name,
-              languageCode: rawMessage.from.language_code,
-              isBot: rawMessage.from.is_bot,
-            }
+            id: rawMessage.from.id,
+            username: rawMessage.from.username,
+            firstName: rawMessage.from.first_name,
+            lastName: rawMessage.from.last_name,
+            languageCode: rawMessage.from.language_code,
+            isBot: rawMessage.from.is_bot,
+          }
           : null,
         updateId: body.update_id,
         updateType,
