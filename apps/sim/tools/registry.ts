@@ -288,6 +288,14 @@ import {
   exaResearchTool,
   exaSearchTool,
 } from '@/tools/exa'
+import {
+  figmaGetFileTool,
+  figmaListCommentsTool,
+  figmaListProjectFilesTool,
+  figmaListTeamComponentsTool,
+  figmaListTeamProjectsTool,
+  figmaPostCommentTool,
+} from '@/tools/figma'
 import { fileParserV2Tool, fileParserV3Tool, fileParseTool } from '@/tools/file'
 import {
   firecrawlAgentTool,
@@ -2241,6 +2249,12 @@ export const tools: Record<string, ToolConfig> = {
   dropbox_get_metadata: dropboxGetMetadataTool,
   dropbox_create_shared_link: dropboxCreateSharedLinkTool,
   dropbox_search: dropboxSearchTool,
+  figma_get_file: figmaGetFileTool,
+  figma_list_comments: figmaListCommentsTool,
+  figma_post_comment: figmaPostCommentTool,
+  figma_list_team_components: figmaListTeamComponentsTool,
+  figma_list_project_files: figmaListProjectFilesTool,
+  figma_list_team_projects: figmaListTeamProjectsTool,
   duckduckgo_search: duckduckgoSearchTool,
   dspy_predict: predictTool,
   dspy_chain_of_thought: chainOfThoughtTool,

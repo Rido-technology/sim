@@ -1,0 +1,6 @@
+export { figmaGetFileTool } from '@/tools/figma/get_file'
+export { figmaListCommentsTool } from '@/tools/figma/list_comments'
+export { figmaListProjectFilesTool } from '@/tools/figma/list_project_files'
+export { figmaListTeamComponentsTool } from '@/tools/figma/list_team_components'
+export { figmaListTeamProjectsTool } from '@/tools/figma/list_team_projects'
+export { figmaPostCommentTool } from '@/tools/figma/post_comment'
