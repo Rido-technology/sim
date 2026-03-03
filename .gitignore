@@ -31,12 +31,7 @@ sim-standalone.tar.gz
 *.pem
 
 # env files
-.env
 *.env
-.env.local
-.env.development
-.env.test
-.env.production
 
 # vercel
 .vercel
@@ -73,3 +68,4 @@ start-collector.sh
 ## Helm Chart Tests
 helm/sim/test
 i18n.cache
+config.bat

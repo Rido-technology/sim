@@ -2787,6 +2787,41 @@ export function WealthboxIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function FigmaIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      width="256"
+      height="256"
+      viewBox="0 0 256 256"
+    >
+      <g transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+        <path
+          d="M 30 90 c 8.28 0 15 -6.72 15 -15 V 60 H 30 c -8.28 0 -15 6.72 -15 15 S 21.72 90 30 90 z"
+          fill="#0ACF83"  
+        />
+        <path
+          d="M 15 45 c 0 -8.28 6.72 -15 15 -15 h 15 v 30 H 30 C 21.72 60 15 53.28 15 45 z"
+          fill="#A259FF" 
+        />
+        <path
+          d="M 15 15 c 0 -8.28 6.72 -15 15 -15 h 15 v 30 H 30 C 21.72 30 15 23.28 15 15 z"
+          fill="#F24E1E" 
+        />
+        <path
+          d="M 45 0 h 15 c 8.28 0 15 6.72 15 15 s -6.72 15 -15 15 H 45 V 0 z"
+          fill="#FF7262" 
+        />
+        <path
+          d="M 75 45 c 0 8.28 -6.72 15 -15 15 s -15 -6.72 -15 -15 s 6.72 -15 15 -15 S 75 36.72 75 45 z"
+          fill="#1ABCFE" 
+        />
+      </g>
+    </svg>
+  )
+}
 export function WebhookIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
