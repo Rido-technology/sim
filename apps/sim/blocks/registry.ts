@@ -30,6 +30,7 @@ import { ElevenLabsBlock } from '@/blocks/blocks/elevenlabs'
 import { EnrichBlock } from '@/blocks/blocks/enrich'
 import { EvaluatorBlock } from '@/blocks/blocks/evaluator'
 import { ExaBlock } from '@/blocks/blocks/exa'
+import { FigmaBlock } from '@/blocks/blocks/figma'
 import { FileBlock, FileV2Block, FileV3Block } from '@/blocks/blocks/file'
 import { FirecrawlBlock } from '@/blocks/blocks/firecrawl'
 import { FirefliesBlock, FirefliesV2Block } from '@/blocks/blocks/fireflies'
@@ -213,6 +214,7 @@ export const registry: Record<string, BlockConfig> = {
   gitlab: GitLabBlock,
   gmail: GmailBlock,
   gmail_v2: GmailV2Block,
+  figma: FigmaBlock,
   google_calendar: GoogleCalendarBlock,
   google_calendar_v2: GoogleCalendarV2Block,
   google_books: GoogleBooksBlock,
