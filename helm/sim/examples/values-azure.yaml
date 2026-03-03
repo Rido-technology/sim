@@ -1,89 +1,86 @@
-# Azure-specific values for Sim
-# Example configuration for Azure AKS deployment
-
 # Global configuration
 global:
   imageRegistry: "ghcr.io"
-  # Use "managed-csi-premium" for Premium SSD, "managed-csi" for Standard SSD
-  # IMPORTANT: For production, use a StorageClass with reclaimPolicy: Retain
-  # to protect database volumes from accidental deletion.
+  imagePullSecrets:
+    - name: acr-secret
   storageClass: "managed-csi"
 
 # Main application
 app:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
 
-  # Node selector for application pods
-  # Uncomment and customize based on your AKS node labels:
-  # nodeSelector:
-  #   agentpool: "application"
-  
   resources:
     limits:
       memory: "4Gi"
     requests:
       memory: "2Gi"
       cpu: "500m"
-  
-  # Production URLs (REQUIRED - update with your actual domain names)
-  env:
-    NEXT_PUBLIC_APP_URL: "https://simstudio.acme.com"
-    BETTER_AUTH_URL: "https://simstudio.acme.com"
-    # SOCKET_SERVER_URL is auto-detected (uses internal service http://sim-realtime:3002)
-    NEXT_PUBLIC_SOCKET_URL: "https://simstudio-ws.acme.com"  # Public WebSocket URL for browsers
-    
-    # Security settings (REQUIRED - replace with your own secure secrets)
-    # Generate using: openssl rand -hex 32
-    BETTER_AUTH_SECRET: "your-secure-production-auth-secret-here"
-    ENCRYPTION_KEY: "your-secure-production-encryption-key-here"
-    INTERNAL_API_SECRET: "your-secure-production-internal-api-secret-here"
-    CRON_SECRET: "your-secure-production-cron-secret-here"
 
-    # Optional: API Key Encryption (RECOMMENDED for production)
-    # Generate 64-character hex string using: openssl rand -hex 32
-    API_ENCRYPTION_KEY: "your-64-char-hex-api-encryption-key-here"  # Optional but recommended
+  env:
+    # --- DOMAIN CONFIGURATION ---
+    NEXT_PUBLIC_APP_URL: "https://sim.testing-ai.online"
+    BETTER_AUTH_URL: "https://sim.testing-ai.online"
+    NEXT_PUBLIC_SOCKET_URL: "https://sim-ws.testing-ai.online"
+
+    # --- SECURITY SECRETS ---
+    # Generated using: openssl rand -hex 32
+    BETTER_AUTH_SECRET: "ef3a0182e91a0ac58fc8ef71477efe45bc84d6b7e7f69eb5ab658664ad0a8bbc"
+    ENCRYPTION_KEY: "7b07d9c1d8441022b2ba7faf522e90db5fc0a67eb0eefe25cda63f0a75119db0"
+    INTERNAL_API_SECRET: "05b567ef046550c56694755d0321cb5354c099b82beabc6ec7324e67667170bd"
+    CRON_SECRET: "19f0be17bb28dcec7cd8935d177189d1bfcc47e52db4e6fa5479b7ec1b084745"
+    API_ENCRYPTION_KEY: "681f51ce16cbc1633f13657cb7bc17b32c533a018df72573ec207124a8c3d6e8"
 
     NODE_ENV: "production"
     NEXT_TELEMETRY_DISABLED: "1"
 
-    # Azure Blob Storage Configuration (RECOMMENDED for production)
-    # Create a storage account and containers in your Azure subscription
-    AZURE_ACCOUNT_NAME: "simstudiostorageacct"           # Azure storage account name
-    AZURE_ACCOUNT_KEY: ""                                 # Storage account access key
-    # Or use connection string instead of account name/key:
-    # AZURE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"
-    AZURE_STORAGE_CONTAINER_NAME: "workspace-files"       # Workspace files container
-    AZURE_STORAGE_KB_CONTAINER_NAME: "knowledge-base"     # Knowledge base documents container
-    AZURE_STORAGE_EXECUTION_FILES_CONTAINER_NAME: "execution-files"  # Workflow execution outputs
-    AZURE_STORAGE_CHAT_CONTAINER_NAME: "chat-files"       # Deployed chat assets container
-    AZURE_STORAGE_COPILOT_CONTAINER_NAME: "copilot-files" # Copilot attachments container
-    AZURE_STORAGE_PROFILE_PICTURES_CONTAINER_NAME: "profile-pictures"  # User avatars container
-    AZURE_STORAGE_OG_IMAGES_CONTAINER_NAME: "og-images"   # OpenGraph preview images container
+    # --- STORAGE CONFIGURATION (MINIO / S3) ---
+    STORAGE_DRIVER: "s3"
 
-# Realtime service
+    # Internal DNS for S3 uploads (Server-to-Server)
+    S3_ENDPOINT: "http://minio-sim.sim.svc.cluster.local:9000"
+
+    # Public URL for S3 downloads (Browser-to-Server)
+    # Required so your browser can see images and files via the Gateway
+    S3_PUBLIC_URL: "https://minio-sim.testing-ai.online"
+
+    # MinIO credentials (must match your minio-values.yaml)
+    S3_ACCESS_KEY: "admin-sim"
+    S3_SECRET_KEY: "changeme" # Update this to your real MinIO password
+
+    # Technical S3 settings
+    S3_REGION: "us-east-1"      # Mandatory placeholder for local MinIO
+    S3_FORCE_PATH_STYLE: "true" # Required for MinIO path mapping
+    S3_USE_SSL: "false"         # False because internal cluster communication is HTTP
+
+    # Bucket names (folders) in MinIO
+    S3_BUCKET: "workspace-files"
+    S3_KB_BUCKET: "knowledge-base"
+    S3_EXECUTION_FILES_BUCKET: "execution-files"
+    S3_CHAT_BUCKET: "chat-files"
+    S3_COPILOT_BUCKET: "copilot-files"
+    S3_PROFILE_PICTURES_BUCKET: "profile-pictures"
+    S3_OG_IMAGES_BUCKET: "og-images"
+
+# Realtime service (WebSocket)
 realtime:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
 
-  # Node selector for realtime pods
-  # Uncomment and customize based on your AKS node labels:
-  # nodeSelector:
-  #   agentpool: "application"
-  
   resources:
     limits:
-      memory: "4Gi"
+      memory: "2Gi"
     requests:
       memory: "1Gi"
       cpu: "250m"
-  
+
   env:
-    NEXT_PUBLIC_APP_URL: "https://simstudio.acme.com"
-    BETTER_AUTH_URL: "https://simstudio.acme.com"
-    NEXT_PUBLIC_SOCKET_URL: "https://simstudio-ws.acme.com"
-    BETTER_AUTH_SECRET: "your-secure-production-auth-secret-here"
-    ALLOWED_ORIGINS: "https://simstudio.acme.com"
+    NEXT_PUBLIC_APP_URL: "https://sim.testing-ai.online"
+    BETTER_AUTH_URL: "https://sim.testing-ai.online"
+    NEXT_PUBLIC_SOCKET_URL: "https://sim-ws.testing-ai.online"
+    # MUST MATCH THE APP BETTER_AUTH_SECRET ABOVE
+    BETTER_AUTH_SECRET: "ef3a0182e91a0ac58fc8ef71477efe45bc84d6b7e7f69eb5ab658664ad0a8bbc"
+    ALLOWED_ORIGINS: "https://sim.testing-ai.online"
     NODE_ENV: "production"
 
 # Database migrations
@@ -93,136 +90,23 @@ migrations:
 # PostgreSQL database
 postgresql:
   enabled: true
-
-  # Node selector for database pods
-  # Uncomment and customize (recommended: memory-optimized VM sizes):
-  # nodeSelector:
-  #   agentpool: "database"
-  
-  # Database authentication (REQUIRED - set secure credentials)
   auth:
     username: postgres
-    password: "your-secure-postgres-password"
+    password: "changeme" # Update this!
     database: simstudio
-  
-  # Resource allocation for production workloads
-  resources:
-    limits:
-      memory: "2Gi"
-    requests:
-      memory: "1Gi"
-      cpu: "500m"
-  
-  # Persistent storage using Azure Managed Disk
+
   persistence:
     enabled: true
     storageClass: "managed-csi"
     size: 10Gi
-  
-  # SSL/TLS configuration (requires cert-manager to be installed)
-  tls:
-    enabled: false  # Set to true if cert-manager is installed
-    certificatesSecret: postgres-tls-secret
-  
-  # PostgreSQL performance tuning for Azure infrastructure
-  config:
-    maxConnections: 1000
-    sharedBuffers: "1280MB"
-    maxWalSize: "4GB"
-    minWalSize: "80MB"
 
-# Ollama AI models with GPU acceleration (Azure NC-series VMs)
-# Set ollama.enabled: false if you don't need local AI models
+# Ollama (Disabled - requires GPU nodes)
 ollama:
   enabled: false
-  replicaCount: 1
 
-  # GPU node targeting - uncomment and customize for GPU node pools
-  # Recommended: NC6s_v3 or NC12s_v3 VMs
-  # nodeSelector:
-  #   agentpool: "gpu"
-  
-  tolerations:
-    - key: "sku"
-      operator: "Equal"
-      value: "gpu"
-      effect: "NoSchedule"
-  
-  # GPU resource allocation for AI model serving
-  gpu:
-    enabled: true
-    count: 1
-  
-  resources:
-    limits:
-      memory: "8Gi"
-      nvidia.com/gpu: "1"
-    requests:
-      memory: "4Gi"
-      cpu: "1000m"
-  
-  # High-performance storage for AI models (use managed-csi-premium for GPU workloads)
-  persistence:
-    enabled: true
-    storageClass: "managed-csi-premium"
-    size: 100Gi
-  
-  env:
-    NVIDIA_DRIVER_CAPABILITIES: "all"
-    OLLAMA_LOAD_TIMEOUT: "-1"
-    OLLAMA_KEEP_ALIVE: "-1"
-    OLLAMA_DEBUG: "1"
-
-# Ingress configuration
+# Standard Ingress (Disabled in favor of Gateway API / HTTPRoute)
 ingress:
-  enabled: true
-  className: nginx
+  enabled: false
 
-  annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-
-  # Main application
-  app:
-    host: simstudio.acme.com
-    paths:
-      - path: /
-        pathType: Prefix
-
-  # Realtime service
-  realtime:
-    host: simstudio-ws.acme.com
-    paths:
-      - path: /
-        pathType: Prefix
-
-  # TLS configuration
-  tls:
-    enabled: true
-    secretName: simstudio-tls-secret
-
-# Internal Ingress configuration
 ingressInternal:
   enabled: false
-  className: azure-application-gateway
-
-  annotations:
-    appgw.ingress.kubernetes.io/use-private-ip: "true"
-
-  # Main application
-  app:
-    host: simstudio-internal.acme.local
-    paths:
-      - path: /
-        pathType: Prefix
-
-  # Realtime service
-  realtime:
-    host: simstudio-internal.acme.local
-    paths:
-      - path: /socket.io
-        pathType: Prefix
-
-  # TLS configuration
-  tls:
-    enabled: true
-    secretName: simstudio-internal-tls-secret
