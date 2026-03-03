@@ -716,6 +716,16 @@ import {
   hunterEmailVerifierTool,
 } from '@/tools/hunter'
 import {
+  instagramCreateCommentTool,
+  instagramCreatePostTool,
+  instagramGetCommentsTool,
+  instagramGetMediaByIdTool,
+  instagramGetMediaTool,
+  instagramGetPageTool,
+  instagramGetProfileTool,
+  instagramReplyToCommentTool,
+} from '@/tools/instagram'
+import {
   incidentioActionsListTool,
   incidentioActionsShowTool,
   incidentioCustomFieldsCreateTool,
@@ -2511,6 +2521,14 @@ export const tools: Record<string, ToolConfig> = {
   exa_find_similar_links: exaFindSimilarLinksTool,
   exa_answer: exaAnswerTool,
   exa_research: exaResearchTool,
+  instagram_get_profile: instagramGetProfileTool,
+  instagram_get_media: instagramGetMediaTool,
+  instagram_get_page: instagramGetPageTool,
+  instagram_get_media_by_id: instagramGetMediaByIdTool,
+  instagram_get_comments: instagramGetCommentsTool,
+  instagram_create_post: instagramCreatePostTool,
+  instagram_create_comment: instagramCreateCommentTool,
+  instagram_reply_to_comment: instagramReplyToCommentTool,
   incidentio_escalations_list: incidentioEscalationsListTool,
   incidentio_escalations_create: incidentioEscalationsCreateTool,
   incidentio_escalations_show: incidentioEscalationsShowTool,
