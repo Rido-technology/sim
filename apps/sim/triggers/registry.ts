@@ -68,6 +68,7 @@ import {
   hubspotTicketPropertyChangedTrigger,
 } from '@/triggers/hubspot'
 import { imapPollingTrigger } from '@/triggers/imap'
+import { instagramWebhookTrigger } from '@/triggers/instagram'
 import {
   jiraIssueCommentedTrigger,
   jiraIssueCreatedTrigger,
@@ -226,5 +227,6 @@ export const TRIGGER_REGISTRY: TriggerRegistry = {
   hubspot_ticket_created: hubspotTicketCreatedTrigger,
   hubspot_ticket_deleted: hubspotTicketDeletedTrigger,
   hubspot_ticket_property_changed: hubspotTicketPropertyChangedTrigger,
+  instagram_webhook: instagramWebhookTrigger,
   imap_poller: imapPollingTrigger,
 }
