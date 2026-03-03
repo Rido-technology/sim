@@ -60,6 +60,7 @@ import { HunterBlock } from '@/blocks/blocks/hunter'
 import { ImageGeneratorBlock } from '@/blocks/blocks/image_generator'
 import { ImapBlock } from '@/blocks/blocks/imap'
 import { IncidentioBlock } from '@/blocks/blocks/incidentio'
+import { InstagramBlock } from '@/blocks/blocks/instagram'
 import { InputTriggerBlock } from '@/blocks/blocks/input_trigger'
 import { IntercomBlock, IntercomV2Block } from '@/blocks/blocks/intercom'
 import { JinaBlock } from '@/blocks/blocks/jina'
@@ -238,6 +239,7 @@ export const registry: Record<string, BlockConfig> = {
   image_generator: ImageGeneratorBlock,
   imap: ImapBlock,
   incidentio: IncidentioBlock,
+  instagram: InstagramBlock,
   input_trigger: InputTriggerBlock,
   intercom: IntercomBlock,
   intercom_v2: IntercomV2Block,
