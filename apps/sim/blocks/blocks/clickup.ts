@@ -2,6 +2,7 @@ import { ClickUpIcon } from '@/components/icons'
 import type { BlockConfig } from '@/blocks/types'
 import { AuthMode } from '@/blocks/types'
 import type { ClickUpResponse } from '@/tools/clickup/types'
+import { getTrigger } from '@/triggers'
 
 export const ClickUpBlock: BlockConfig<ClickUpResponse> = {
   type: 'clickup',
@@ -14,6 +15,7 @@ export const ClickUpBlock: BlockConfig<ClickUpResponse> = {
   category: 'tools',
   bgColor: '#ffffff',
   icon: ClickUpIcon,
+  triggerAllowed: true,
   subBlocks: [
     {
       id: 'operation',
@@ -462,6 +464,7 @@ export const ClickUpBlock: BlockConfig<ClickUpResponse> = {
         value: 'add_comment',
       },
     },
+    ...getTrigger('clickup_webhook').subBlocks,
   ],
 
   tools: {
@@ -577,5 +580,18 @@ export const ClickUpBlock: BlockConfig<ClickUpResponse> = {
     tasks: { type: 'array', description: 'List of tasks' },
     task: { type: 'any', description: 'Task details' },
     comment: { type: 'any', description: 'Comment details' },
+  },
+
+  triggers: {
+    enabled: true,
+    available: [
+      'clickup_webhook',
+      'clickup_task_created',
+      'clickup_task_updated',
+      'clickup_task_status_updated',
+      'clickup_task_comment_posted',
+      'clickup_task_deleted',
+      'clickup_task_assigned',
+    ],
   },
 }

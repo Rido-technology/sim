@@ -21,6 +21,15 @@ import {
   circlebackMeetingNotesTrigger,
   circlebackWebhookTrigger,
 } from '@/triggers/circleback'
+import {
+  clickupTaskAssignedTrigger,
+  clickupTaskCommentPostedTrigger,
+  clickupTaskCreatedTrigger,
+  clickupTaskDeletedTrigger,
+  clickupTaskStatusUpdatedTrigger,
+  clickupTaskUpdatedTrigger,
+  clickupWebhookTrigger,
+} from '@/triggers/clickup'
 import { facebookWebhookTrigger } from '@/triggers/facebook'
 import { firefliesTranscriptionCompleteTrigger } from '@/triggers/fireflies'
 import { genericWebhookTrigger } from '@/triggers/generic'
@@ -165,6 +174,13 @@ export const TRIGGER_REGISTRY: TriggerRegistry = {
   circleback_meeting_completed: circlebackMeetingCompletedTrigger,
   circleback_meeting_notes: circlebackMeetingNotesTrigger,
   circleback_webhook: circlebackWebhookTrigger,
+  clickup_webhook: clickupWebhookTrigger,
+  clickup_task_created: clickupTaskCreatedTrigger,
+  clickup_task_updated: clickupTaskUpdatedTrigger,
+  clickup_task_status_updated: clickupTaskStatusUpdatedTrigger,
+  clickup_task_comment_posted: clickupTaskCommentPostedTrigger,
+  clickup_task_deleted: clickupTaskDeletedTrigger,
+  clickup_task_assigned: clickupTaskAssignedTrigger,
   facebook_webhook: facebookWebhookTrigger,
   jira_webhook: jiraWebhookTrigger,
   jira_issue_created: jiraIssueCreatedTrigger,
