@@ -2525,6 +2525,60 @@ export const auth = betterAuth({
           },
         },
 
+        // ClickUp provider
+        {
+          providerId: 'clickup',
+          clientId: env.CLICKUP_CLIENT_ID as string,
+          clientSecret: env.CLICKUP_CLIENT_SECRET as string,
+          authorizationUrl: 'https://app.clickup.com/api',
+          tokenUrl: 'https://api.clickup.com/api/v2/oauth/token',
+          userInfoUrl: 'https://api.clickup.com/api/v2/user',
+          scopes: [],
+          responseType: 'code',
+          authentication: 'body',
+          redirectURI: `${getBaseUrl()}/api/auth/oauth2/callback/clickup`,
+          getUserInfo: async (tokens) => {
+            try {
+              logger.info('Fetching ClickUp user profile')
+
+              if (!tokens.accessToken) {
+                logger.error('Missing access token for ClickUp')
+                return null
+              }
+
+              const response = await fetch('https://api.clickup.com/api/v2/user', {
+                headers: {
+                  Authorization: tokens.accessToken,
+                },
+              })
+
+              if (!response.ok) {
+                logger.error('Failed to fetch ClickUp user info', {
+                  status: response.status,
+                  statusText: response.statusText,
+                })
+                throw new Error('Failed to fetch user info')
+              }
+
+              const data = await response.json()
+              const profile = data.user
+
+              return {
+                id: `${profile.id}-${crypto.randomUUID()}`,
+                name: profile.username || 'ClickUp User',
+                email: profile.email || `${profile.id}@clickup.user`,
+                emailVerified: true,
+                image: profile.profilePicture || undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            } catch (error) {
+              logger.error('Error in ClickUp getUserInfo:', { error })
+              return null
+            }
+          },
+        },
+
         // Spotify provider
         {
           providerId: 'spotify',
@@ -2654,6 +2708,10 @@ export const auth = betterAuth({
           getUserInfo: async (tokens) => {
             try {
               logger.info('Fetching Cal.com user profile')
+
+              if (!tokens.accessToken) {
+                throw new Error('Missing access token')
+              }
 
               const response = await fetch('https://api.cal.com/v2/me', {
                 headers: {

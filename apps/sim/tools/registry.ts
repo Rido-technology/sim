@@ -98,6 +98,16 @@ import {
 } from '@/tools/calendly'
 import { clayPopulateTool } from '@/tools/clay'
 import {
+  clickupAddCommentTool,
+  clickupCreateTaskTool,
+  clickupGetTaskTool,
+  clickupGetWorkspaceTool,
+  clickupListListsTool,
+  clickupListSpacesTool,
+  clickupListTasksTool,
+  clickupUpdateTaskTool,
+} from '@/tools/clickup'
+import {
   clerkCreateOrganizationTool,
   clerkCreateUserTool,
   clerkDeleteUserTool,
@@ -2967,6 +2977,14 @@ export const tools: Record<string, ToolConfig> = {
   telegram_send_video: telegramSendVideoTool,
   telegram_send_document: telegramSendDocumentTool,
   clay_populate: clayPopulateTool,
+  clickup_get_workspace: clickupGetWorkspaceTool,
+  clickup_list_spaces: clickupListSpacesTool,
+  clickup_list_lists: clickupListListsTool,
+  clickup_get_task: clickupGetTaskTool,
+  clickup_list_tasks: clickupListTasksTool,
+  clickup_create_task: clickupCreateTaskTool,
+  clickup_update_task: clickupUpdateTaskTool,
+  clickup_add_comment: clickupAddCommentTool,
   clerk_list_users: clerkListUsersTool,
   clerk_get_user: clerkGetUserTool,
   clerk_create_user: clerkCreateUserTool,

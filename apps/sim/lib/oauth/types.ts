@@ -44,6 +44,7 @@ export type OAuthProvider =
   | 'calcom'
   | 'webex'
   | 'facebook'
+  | 'clickup'
 
 export type OAuthService =
   | 'google'
@@ -87,6 +88,7 @@ export type OAuthService =
   | 'calcom'
   | 'webex'
   | 'facebook'
+  |'clickup'
 
 export interface OAuthProviderConfig {
   name: string
