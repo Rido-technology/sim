@@ -3,6 +3,7 @@ export const PROACTIVE_REFRESH_THRESHOLD_DAYS = 7
 
 export const MICROSOFT_PROVIDERS = new Set([
   'microsoft-excel',
+  'microsoft-onenote',
   'microsoft-planner',
   'microsoft-teams',
   'outlook',

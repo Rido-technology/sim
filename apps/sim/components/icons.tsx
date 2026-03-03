@@ -3260,6 +3260,31 @@ export function MicrosoftPlannerIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MicrosoftOneNoteIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M20 2H8C6.9 2 6 2.9 6 4V20C6 21.1 6.9 22 8 22H20C21.1 22 22 21.1 22 20V4C22 2.9 21.1 2 20 2Z"
+        fill="#7719AA"
+      />
+      <path
+        d="M4 6H6V18H4C2.9 18 2 17.1 2 16V8C2 6.9 2.9 6 4 6Z"
+        fill="#CA5010"
+      />
+      <path
+        d="M14 7L10 17H12L16 7H14Z"
+        fill="white"
+      />
+      <circle cx="17" cy="12" r="1.5" fill="white" />
+    </svg>
+  );
+}
+
 export function ParallelIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

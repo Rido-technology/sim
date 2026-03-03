@@ -82,6 +82,7 @@ import { Mem0Block } from '@/blocks/blocks/mem0'
 import { MemoryBlock } from '@/blocks/blocks/memory'
 import { MicrosoftExcelBlock, MicrosoftExcelV2Block } from '@/blocks/blocks/microsoft_excel'
 import { MicrosoftPlannerBlock } from '@/blocks/blocks/microsoft_planner'
+import { MicrosoftOneNoteBlock } from '@/blocks/blocks/microsoft_onenote'
 import { MicrosoftTeamsBlock } from '@/blocks/blocks/microsoft_teams'
 import {
   MistralParseBlock,
@@ -267,6 +268,7 @@ export const registry: Record<string, BlockConfig> = {
   microsoft_excel: MicrosoftExcelBlock,
   microsoft_excel_v2: MicrosoftExcelV2Block,
   microsoft_planner: MicrosoftPlannerBlock,
+  microsoft_onenote: MicrosoftOneNoteBlock,
   microsoft_teams: MicrosoftTeamsBlock,
   mistral_parse: MistralParseBlock,
   mistral_parse_v2: MistralParseV2Block,
