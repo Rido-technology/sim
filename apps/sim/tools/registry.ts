@@ -1423,6 +1423,23 @@ import {
   mysqlUpdateTool,
 } from '@/tools/mysql'
 import {
+<<<<<<< Updated upstream
+=======
+  clickhouseExecuteTool,
+  clickhouseInsertTool,
+  clickhouseIntrospectTool,
+  clickhouseQueryTool,
+} from '@/tools/clickhouse'
+import {
+  surrealdbDeleteTool,
+  surrealdbExecuteTool,
+  surrealdbInsertTool,
+  surrealdbIntrospectTool,
+  surrealdbQueryTool,
+  surrealdbUpdateTool,
+} from '@/tools/surrealdb'
+import {
+>>>>>>> Stashed changes
   neo4jCreateTool,
   neo4jDeleteTool,
   neo4jExecuteTool,
@@ -2651,6 +2668,12 @@ export const tools: Record<string, ToolConfig> = {
   supabase_storage_delete_bucket: supabaseStorageDeleteBucketTool,
   supabase_storage_get_public_url: supabaseStorageGetPublicUrlTool,
   supabase_storage_create_signed_url: supabaseStorageCreateSignedUrlTool,
+  surrealdb_query: surrealdbQueryTool,
+  surrealdb_insert: surrealdbInsertTool,
+  surrealdb_update: surrealdbUpdateTool,
+  surrealdb_delete: surrealdbDeleteTool,
+  surrealdb_execute: surrealdbExecuteTool,
+  surrealdb_introspect: surrealdbIntrospectTool,
   calendly_get_current_user: calendlyGetCurrentUserTool,
   calendly_list_event_types: calendlyListEventTypesTool,
   calendly_get_event_type: calendlyGetEventTypeTool,

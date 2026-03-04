@@ -3159,6 +3159,40 @@ export function OpenRouterIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+<<<<<<< Updated upstream
+=======
+export function SurrealDBIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'>
+      <path
+        d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'
+        fill='#FF00A0'
+        opacity='0.15'
+      />
+      <path
+        d='M17.5 8.5c0 1.38-1.12 2.5-2.5 2.5H9a2.5 2.5 0 0 1 0-5h6c1.38 0 2.5 1.12 2.5 2.5z'
+        fill='#FF00A0'
+      />
+      <path
+        d='M6.5 15.5c0-1.38 1.12-2.5 2.5-2.5h6a2.5 2.5 0 0 1 0 5H9c-1.38 0-2.5-1.12-2.5-2.5z'
+        fill='#9600FF'
+      />
+    </svg>
+  )
+}
+
+export function ClickHouseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' fill='none'>
+      <rect width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='2.25' width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='4.5' width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='6.75' y='2.5' width='1.5' height='3' rx='0.75' fill='#FAFF69' />
+    </svg>
+  )
+}
+
+>>>>>>> Stashed changes
 export function MongoDBIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'>
