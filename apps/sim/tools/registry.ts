@@ -1302,6 +1302,10 @@ import {
   rdsUpdateTool,
 } from '@/tools/rds'
 import {
+  rabbitmqSendToExchangeTool,
+  rabbitmqSendToQueueTool,
+} from '@/tools/rabbitmq'
+import {
   redditDeleteTool,
   redditEditTool,
   redditGetCommentsTool,
@@ -2224,6 +2228,8 @@ export const tools: Record<string, ToolConfig> = {
   rds_delete: rdsDeleteTool,
   rds_execute: rdsExecuteTool,
   rds_introspect: rdsIntrospectTool,
+  rabbitmq_send_to_exchange: rabbitmqSendToExchangeTool,
+  rabbitmq_send_to_queue: rabbitmqSendToQueueTool,
   dynamodb_get: dynamodbGetTool,
   dynamodb_put: dynamodbPutTool,
   dynamodb_query: dynamodbQueryTool,
