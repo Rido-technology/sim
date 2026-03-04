@@ -19,6 +19,7 @@ import { ClerkBlock } from '@/blocks/blocks/clerk'
 import { ConditionBlock } from '@/blocks/blocks/condition'
 import { ConfluenceBlock, ConfluenceV2Block } from '@/blocks/blocks/confluence'
 import { CursorBlock, CursorV2Block } from '@/blocks/blocks/cursor'
+import { CsvBlock } from '@/blocks/blocks/csv'
 import { DatadogBlock } from '@/blocks/blocks/datadog'
 import { DiscordBlock } from '@/blocks/blocks/discord'
 import { DropboxBlock } from '@/blocks/blocks/dropbox'
@@ -189,6 +190,7 @@ export const registry: Record<string, BlockConfig> = {
   confluence_v2: ConfluenceV2Block,
   cursor: CursorBlock,
   cursor_v2: CursorV2Block,
+  csv: CsvBlock,
   datadog: DatadogBlock,
   discord: DiscordBlock,
   dropbox: DropboxBlock,
