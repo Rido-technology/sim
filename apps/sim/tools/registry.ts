@@ -288,6 +288,7 @@ import {
   exaResearchTool,
   exaSearchTool,
 } from '@/tools/exa'
+import { csvToJsonTool, jsonToCsvTool } from '@/tools/csv'
 import { fileParserV2Tool, fileParserV3Tool, fileParseTool } from '@/tools/file'
 import {
   firecrawlAgentTool,
@@ -2241,6 +2242,8 @@ export const tools: Record<string, ToolConfig> = {
   dropbox_get_metadata: dropboxGetMetadataTool,
   dropbox_create_shared_link: dropboxCreateSharedLinkTool,
   dropbox_search: dropboxSearchTool,
+  csv_to_json: csvToJsonTool,
+  json_to_csv: jsonToCsvTool,
   duckduckgo_search: duckduckgoSearchTool,
   dspy_predict: predictTool,
   dspy_chain_of_thought: chainOfThoughtTool,
