@@ -25,6 +25,7 @@ import {
   airtableUpdateRecordTool,
 } from '@/tools/airtable'
 import { airweaveSearchTool } from '@/tools/airweave'
+import { binanceFetchPairPriceTool } from '@/tools/binance'
 import { apifyRunActorAsyncTool, apifyRunActorSyncTool } from '@/tools/apify'
 import {
   apolloAccountBulkCreateTool,
@@ -1828,6 +1829,7 @@ export const tools: Record<string, ToolConfig> = {
   a2a_send_message: a2aSendMessageTool,
   a2a_set_push_notification: a2aSetPushNotificationTool,
   airweave_search: airweaveSearchTool,
+  binance_fetch_pair_price: binanceFetchPairPriceTool,
   arxiv_search: arxivSearchTool,
   arxiv_get_paper: arxivGetPaperTool,
   arxiv_get_author_papers: arxivGetAuthorPapersTool,
