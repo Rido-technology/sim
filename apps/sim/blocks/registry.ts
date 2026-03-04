@@ -105,6 +105,7 @@ import { PostHogBlock } from '@/blocks/blocks/posthog'
 import { PulseBlock, PulseV2Block } from '@/blocks/blocks/pulse'
 import { QdrantBlock } from '@/blocks/blocks/qdrant'
 import { RDSBlock } from '@/blocks/blocks/rds'
+import { RabbitMQBlock } from '@/blocks/blocks/rabbitmq'
 import { RedditBlock } from '@/blocks/blocks/reddit'
 import { ReductoBlock, ReductoV2Block } from '@/blocks/blocks/reducto'
 import { ResendBlock } from '@/blocks/blocks/resend'
@@ -286,6 +287,7 @@ export const registry: Record<string, BlockConfig> = {
   pulse_v2: PulseV2Block,
   qdrant: QdrantBlock,
   rds: RDSBlock,
+  rabbitmq: RabbitMQBlock,
   reddit: RedditBlock,
   reducto: ReductoBlock,
   reducto_v2: ReductoV2Block,
