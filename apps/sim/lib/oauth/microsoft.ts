@@ -2,6 +2,7 @@ export const MICROSOFT_REFRESH_TOKEN_LIFETIME_DAYS = 90
 export const PROACTIVE_REFRESH_THRESHOLD_DAYS = 7
 
 export const MICROSOFT_PROVIDERS = new Set([
+  'microsoft-calendar',
   'microsoft-excel',
   'microsoft-onenote',
   'microsoft-planner',

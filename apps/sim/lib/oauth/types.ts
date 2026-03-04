@@ -20,6 +20,7 @@ export type OAuthProvider =
   | 'jira'
   | 'dropbox'
   | 'microsoft'
+  | 'microsoft-calendar'
   | 'microsoft-excel'
   | 'microsoft-onenote'
   | 'microsoft-planner'
@@ -65,6 +66,7 @@ export type OAuthService =
   | 'notion'
   | 'jira'
   | 'dropbox'
+  | 'microsoft-calendar'
   | 'microsoft-excel'
   | 'microsoft-teams'
   | 'microsoft-onenote'
@@ -90,7 +92,7 @@ export type OAuthService =
   | 'calcom'
   | 'webex'
   | 'facebook'
-  |'clickup'
+  | 'clickup'
 
 export interface OAuthProviderConfig {
   name: string

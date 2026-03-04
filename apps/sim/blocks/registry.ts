@@ -81,6 +81,7 @@ import { McpBlock } from '@/blocks/blocks/mcp'
 import { Mem0Block } from '@/blocks/blocks/mem0'
 import { MemoryBlock } from '@/blocks/blocks/memory'
 import { MicrosoftExcelBlock, MicrosoftExcelV2Block } from '@/blocks/blocks/microsoft_excel'
+import { MicrosoftCalendarBlock } from '@/blocks/blocks/microsoft_calendar'
 import { MicrosoftPlannerBlock } from '@/blocks/blocks/microsoft_planner'
 import { MicrosoftOneNoteBlock } from '@/blocks/blocks/microsoft_onenote'
 import { MicrosoftTeamsBlock } from '@/blocks/blocks/microsoft_teams'
@@ -267,6 +268,7 @@ export const registry: Record<string, BlockConfig> = {
   memory: MemoryBlock,
   microsoft_excel: MicrosoftExcelBlock,
   microsoft_excel_v2: MicrosoftExcelV2Block,
+  microsoft_calendar: MicrosoftCalendarBlock,
   microsoft_planner: MicrosoftPlannerBlock,
   microsoft_onenote: MicrosoftOneNoteBlock,
   microsoft_teams: MicrosoftTeamsBlock,

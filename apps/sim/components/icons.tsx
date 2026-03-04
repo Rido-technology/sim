@@ -3285,6 +3285,39 @@ export function MicrosoftOneNoteIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MicrosoftCalendarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <rect
+        x="3"
+        y="4"
+        width="18"
+        height="18"
+        rx="2"
+        fill="#0078D4"
+      />
+      <rect x="3" y="4" width="18" height="5" rx="2" fill="#106EBE" />
+      <path
+        d="M7 2V6M17 2V6"
+        stroke="#106EBE"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <rect x="6" y="11" width="3" height="3" rx="0.5" fill="white" />
+      <rect x="10.5" y="11" width="3" height="3" rx="0.5" fill="white" />
+      <rect x="15" y="11" width="3" height="3" rx="0.5" fill="white" />
+      <rect x="6" y="15.5" width="3" height="3" rx="0.5" fill="white" />
+      <rect x="10.5" y="15.5" width="3" height="3" rx="0.5" fill="white" />
+      <rect x="15" y="15.5" width="3" height="3" rx="0.5" fill="white" />
+    </svg>
+  );
+}
+
 export function ParallelIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
