@@ -2177,6 +2177,20 @@ export function MicrosoftIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export const RabbitMQIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    fill='currentColor'
+    height='1em'
+    viewBox='0 0 24 24'
+    width='1em'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <title>RabbitMQ</title>
+    <path d='M23.035 9.601h-7.677a.956.956 0 01-.962-.962V.962A.956.956 0 0013.434 0H10.56a.956.956 0 00-.962.962v7.677a.956.956 0 01-.962.962H5.862a.956.956 0 01-.962-.962V.962A.956.956 0 003.938 0H1.065A.956.956 0 00.103.962v22.076c0 .53.432.962.962.962h21.97a.956.956 0 00.962-.962V10.563a.956.956 0 00-.962-.962zm-4.508 8.867a1.443 1.443 0 11-2.887 0 1.443 1.443 0 012.887 0z' />
+  </svg>
+)
+
 export function MicrosoftTeamsIcon(props: SVGProps<SVGSVGElement>) {
   const id = useId()
   const gradientId = `msteams_gradient_${id}`
