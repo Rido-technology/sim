@@ -147,6 +147,7 @@
     "react-window": "2.2.3",
     "reactflow": "^11.11.4",
     "redis": "5.10.0",
+    "amqplib": "0.10.7",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-breaks": "^4.0.0",
