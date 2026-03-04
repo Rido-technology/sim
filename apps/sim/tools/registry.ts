@@ -1423,14 +1423,6 @@ import {
   mysqlUpdateTool,
 } from '@/tools/mysql'
 import {
-<<<<<<< Updated upstream
-=======
-  clickhouseExecuteTool,
-  clickhouseInsertTool,
-  clickhouseIntrospectTool,
-  clickhouseQueryTool,
-} from '@/tools/clickhouse'
-import {
   surrealdbDeleteTool,
   surrealdbExecuteTool,
   surrealdbInsertTool,
@@ -1439,7 +1431,6 @@ import {
   surrealdbUpdateTool,
 } from '@/tools/surrealdb'
 import {
->>>>>>> Stashed changes
   neo4jCreateTool,
   neo4jDeleteTool,
   neo4jExecuteTool,
