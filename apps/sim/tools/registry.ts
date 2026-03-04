@@ -1402,6 +1402,12 @@ import {
   mysqlUpdateTool,
 } from '@/tools/mysql'
 import {
+  clickhouseExecuteTool,
+  clickhouseInsertTool,
+  clickhouseIntrospectTool,
+  clickhouseQueryTool,
+} from '@/tools/clickhouse'
+import {
   neo4jCreateTool,
   neo4jDeleteTool,
   neo4jExecuteTool,
@@ -2841,6 +2847,10 @@ export const tools: Record<string, ToolConfig> = {
   mongodb_delete: mongodbDeleteTool,
   mongodb_execute: mongodbExecuteTool,
   mongodb_introspect: mongodbIntrospectTool,
+  clickhouse_query: clickhouseQueryTool,
+  clickhouse_insert: clickhouseInsertTool,
+  clickhouse_execute: clickhouseExecuteTool,
+  clickhouse_introspect: clickhouseIntrospectTool,
   mysql_query: mysqlQueryTool,
   mysql_insert: mysqlInsertTool,
   mysql_update: mysqlUpdateTool,

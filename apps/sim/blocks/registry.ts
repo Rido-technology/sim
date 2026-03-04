@@ -18,6 +18,7 @@ import { CalComBlock } from '@/blocks/blocks/calcom'
 import { CalendlyBlock } from '@/blocks/blocks/calendly'
 import { ChatTriggerBlock } from '@/blocks/blocks/chat_trigger'
 import { CirclebackBlock } from '@/blocks/blocks/circleback'
+import { ClickHouseBlock } from '@/blocks/blocks/clickhouse'
 import { ClayBlock } from '@/blocks/blocks/clay'
 import { ClerkBlock } from '@/blocks/blocks/clerk'
 import { CloudflareBlock } from '@/blocks/blocks/cloudflare'
@@ -210,6 +211,7 @@ export const registry: Record<string, BlockConfig> = {
   calendly: CalendlyBlock,
   chat_trigger: ChatTriggerBlock,
   circleback: CirclebackBlock,
+  clickhouse: ClickHouseBlock,
   cloudflare: CloudflareBlock,
   clay: ClayBlock,
   clerk: ClerkBlock,

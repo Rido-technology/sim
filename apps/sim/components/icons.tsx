@@ -3284,6 +3284,17 @@ export function OpenRouterIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function ClickHouseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 8' fill='none'>
+      <rect width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='2.25' width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='4.5' width='1.5' height='8' rx='0.75' fill='#FAFF69' />
+      <rect x='6.75' y='2.5' width='1.5' height='3' rx='0.75' fill='#FAFF69' />
+    </svg>
+  )
+}
+
 export function MongoDBIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'>
