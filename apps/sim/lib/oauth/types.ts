@@ -25,6 +25,7 @@ export type OAuthProvider =
   | 'microsoft-onenote'
   | 'microsoft-planner'
   | 'microsoft-teams'
+  | 'microsoft-todo'
   | 'outlook'
   | 'onedrive'
   | 'sharepoint'
@@ -71,6 +72,7 @@ export type OAuthService =
   | 'microsoft-teams'
   | 'microsoft-onenote'
   | 'microsoft-planner'
+  | 'microsoft-todo'
   | 'sharepoint'
   | 'outlook'
   | 'linear'
@@ -93,6 +95,7 @@ export type OAuthService =
   | 'webex'
   | 'facebook'
   | 'clickup'
+   |'microsoft-todo'
 
 export interface OAuthProviderConfig {
   name: string

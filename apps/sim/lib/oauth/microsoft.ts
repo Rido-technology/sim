@@ -7,6 +7,7 @@ export const MICROSOFT_PROVIDERS = new Set([
   'microsoft-onenote',
   'microsoft-planner',
   'microsoft-teams',
+  'microsoft-todo',
   'outlook',
   'onedrive',
   'sharepoint',

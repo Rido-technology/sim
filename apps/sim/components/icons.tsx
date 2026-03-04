@@ -3318,6 +3318,19 @@ export function MicrosoftCalendarIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MicrosoftTodoIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+   <svg xmlns="http://www.w3.org/2000/svg"     {...props}
+    x="0px" y="0px" width="100" height="100" 
+    viewBox="0 0 48 48">
+<path fill="#0d47a1"
+d="M21.25,40.454l6.13-6.142c0.694-0.696,0.694-1.823,0-2.519L11.165,15.547	c-0.694-0.696-1.82-0.696-2.514,0l-6.13,6.142c-0.694,0.696-0.694,1.823,0,2.519l16.215,16.246	C19.43,41.15,20.555,41.15,21.25,40.454z"></path>
+<path fill="#29b6f6" 
+d="M18.788,40.498l-6.223-6.235c-0.669-0.67-0.669-1.756,0-2.426L35.854,8.502	c0.669-0.67,1.753-0.67,2.421,0l6.223,6.235c0.669,0.67,0.669,1.756,0,2.426L21.209,40.498	C20.541,41.167,19.457,41.167,18.788,40.498z"></path>
+</svg>
+  );
+}
+
 export function ParallelIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

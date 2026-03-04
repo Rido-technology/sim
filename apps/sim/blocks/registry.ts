@@ -85,6 +85,7 @@ import { MicrosoftCalendarBlock } from '@/blocks/blocks/microsoft_calendar'
 import { MicrosoftPlannerBlock } from '@/blocks/blocks/microsoft_planner'
 import { MicrosoftOneNoteBlock } from '@/blocks/blocks/microsoft_onenote'
 import { MicrosoftTeamsBlock } from '@/blocks/blocks/microsoft_teams'
+import { MicrosoftTodoBlock } from '@/blocks/blocks/microsoft_todo'
 import {
   MistralParseBlock,
   MistralParseV2Block,
@@ -272,6 +273,7 @@ export const registry: Record<string, BlockConfig> = {
   microsoft_planner: MicrosoftPlannerBlock,
   microsoft_onenote: MicrosoftOneNoteBlock,
   microsoft_teams: MicrosoftTeamsBlock,
+  microsoft_todo: MicrosoftTodoBlock,
   mistral_parse: MistralParseBlock,
   mistral_parse_v2: MistralParseV2Block,
   mistral_parse_v3: MistralParseV3Block,

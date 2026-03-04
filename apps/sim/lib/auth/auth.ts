@@ -400,6 +400,7 @@ export const auth = betterAuth({
         'microsoft-excel',
         'microsoft-onenote',
         'microsoft-planner',
+        'microsoft-todo',
         'outlook',
         'onedrive',
         'sharepoint',
@@ -1224,6 +1225,52 @@ export const auth = betterAuth({
           authentication: 'basic',
           pkce: true,
           redirectURI: `${getBaseUrl()}/api/auth/oauth2/callback/microsoft-planner`,
+          getUserInfo: async (tokens) => {
+            try {
+              const response = await fetch('https://graph.microsoft.com/v1.0/me', {
+                headers: { Authorization: `Bearer ${tokens.accessToken}` },
+              })
+              if (!response.ok) {
+                logger.error('Failed to fetch Microsoft user info', { status: response.status })
+                throw new Error(`Failed to fetch Microsoft user info: ${response.statusText}`)
+              }
+              const profile = await response.json()
+              const now = new Date()
+              return {
+                id: `${profile.id}-${crypto.randomUUID()}`,
+                name: profile.displayName || 'Microsoft User',
+                email: profile.mail || profile.userPrincipalName,
+                emailVerified: true,
+                createdAt: now,
+                updatedAt: now,
+              }
+            } catch (error) {
+              logger.error('Error in Microsoft getUserInfo', { error })
+              throw error
+            }
+          },
+        },
+        {
+          providerId: 'microsoft-todo',
+          clientId: env.MICROSOFT_CLIENT_ID as string,
+          clientSecret: env.MICROSOFT_CLIENT_SECRET as string,
+          authorizationUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+          tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+          userInfoUrl: 'https://graph.microsoft.com/v1.0/me',
+          scopes: [
+            'openid',
+            'profile',
+            'email',
+            'User.Read',
+            'Tasks.ReadWrite',
+            'Tasks.ReadWrite.Shared',
+            'offline_access',
+          ],
+          responseType: 'code',
+          accessType: 'offline',
+          authentication: 'basic',
+          pkce: true,
+          redirectURI: `${getBaseUrl()}/api/auth/oauth2/callback/microsoft-todo`,
           getUserInfo: async (tokens) => {
             try {
               const response = await fetch('https://graph.microsoft.com/v1.0/me', {
