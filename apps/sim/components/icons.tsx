@@ -5532,3 +5532,17 @@ export function OnePasswordIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+export const BinanceIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    fill='currentColor'
+    height='1em'
+    viewBox='0 0 24 24'
+    width='1em'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <title>Binance</title>
+    <path d='M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6355-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5692 12l2.6924-2.7164zm-9.272 0l2.7164 2.7164-2.7164 2.7154-2.7164-2.7154 2.7164-2.7164zm-9.2722 0L5.4308 12l-2.7154 2.7164L0 12l2.7164-2.7164zM12 0l7.353 7.353-2.7175 2.7164L12 5.3718 7.3645 10.07 4.647 7.353 12 0z' />
+  </svg>
+)
