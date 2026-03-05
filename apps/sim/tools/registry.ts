@@ -185,6 +185,17 @@ import {
   datadogSubmitMetricsTool,
 } from '@/tools/datadog'
 import {
+  addSubtractDateTool,
+  dateDifferenceTool,
+  extractDatePartsTool,
+  firstDayOfPreviousMonthTool,
+  formatDateTool,
+  getCurrentDateTool,
+  lastDayOfPreviousMonthTool,
+  nextDayOfWeekTool,
+  nextDayOfYearTool,
+} from '@/tools/date_helper'
+import {
   discordAddReactionTool,
   discordArchiveThreadTool,
   discordAssignRoleTool,
@@ -3104,6 +3115,15 @@ export const tools: Record<string, ToolConfig> = {
   datadog_create_downtime: datadogCreateDowntimeTool,
   datadog_list_downtimes: datadogListDowntimesTool,
   datadog_cancel_downtime: datadogCancelDowntimeTool,
+  date_helper_get_current_date: getCurrentDateTool,
+  date_helper_format_date: formatDateTool,
+  date_helper_add_subtract_date: addSubtractDateTool,
+  date_helper_date_difference: dateDifferenceTool,
+  date_helper_extract_date_parts: extractDatePartsTool,
+  date_helper_next_day_of_week: nextDayOfWeekTool,
+  date_helper_next_day_of_year: nextDayOfYearTool,
+  date_helper_first_day_previous_month: firstDayOfPreviousMonthTool,
+  date_helper_last_day_previous_month: lastDayOfPreviousMonthTool,
   openai_image: openAIImageTool,
   microsoft_teams_read_chat: microsoftTeamsReadChatTool,
   microsoft_teams_write_chat: microsoftTeamsWriteChatTool,

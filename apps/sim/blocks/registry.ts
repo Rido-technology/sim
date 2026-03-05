@@ -21,6 +21,7 @@ import { ConditionBlock } from '@/blocks/blocks/condition'
 import { ConfluenceBlock, ConfluenceV2Block } from '@/blocks/blocks/confluence'
 import { CursorBlock, CursorV2Block } from '@/blocks/blocks/cursor'
 import { DatadogBlock } from '@/blocks/blocks/datadog'
+import { DateHelperBlock } from '@/blocks/blocks/date_helper'
 import { DiscordBlock } from '@/blocks/blocks/discord'
 import { DropboxBlock } from '@/blocks/blocks/dropbox'
 import { DSPyBlock } from '@/blocks/blocks/dspy'
@@ -198,6 +199,7 @@ export const registry: Record<string, BlockConfig> = {
   cursor: CursorBlock,
   cursor_v2: CursorV2Block,
   datadog: DatadogBlock,
+  date_helper: DateHelperBlock,
   discord: DiscordBlock,
   dropbox: DropboxBlock,
   dspy: DSPyBlock,
