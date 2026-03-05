@@ -1,9 +1,7 @@
 # Global configuration
 global:
   imageRegistry: "ghcr.io"
-  imagePullSecrets:
-    - name: acr-secret
-  storageClass: "managed-csi"
+  storageClass: "local-path"
 
 # Main application
 app:
@@ -38,15 +36,15 @@ app:
     STORAGE_DRIVER: "s3"
 
     # Internal DNS for S3 uploads (Server-to-Server)
-    S3_ENDPOINT: "http://minio-sim.sim.svc.cluster.local:9000"
+    S3_ENDPOINT: "http://trigger-minio.trigger.svc.cluster.local:9000"
 
     # Public URL for S3 downloads (Browser-to-Server)
     # Required so your browser can see images and files via the Gateway
-    S3_PUBLIC_URL: "https://minio-sim.testing-ai.online"
+    S3_PUBLIC_URL: "https://minio-trigger.testing-ai.online"
 
-    # MinIO credentials (must match your minio-values.yaml)
-    S3_ACCESS_KEY: "admin-sim"
-    S3_SECRET_KEY: "changeme" # Update this to your real MinIO password
+    # MinIO credentials (must match triger s3 )
+    S3_ACCESS_KEY: "trigger-s3-access"
+    S3_SECRET_KEY: "trigger-s3-secret-key-fort"
 
     # Technical S3 settings
     S3_REGION: "us-east-1"      # Mandatory placeholder for local MinIO
@@ -97,7 +95,7 @@ postgresql:
 
   persistence:
     enabled: true
-    storageClass: "managed-csi"
+    storageClass: "local-path"
     size: 10Gi
 
 # Ollama (Disabled - requires GPU nodes)
