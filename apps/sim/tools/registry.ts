@@ -1753,6 +1753,7 @@ import {
 } from '@/tools/wordpress'
 import { workflowExecutorTool } from '@/tools/workflow'
 import { xReadTool, xSearchTool, xUserTool, xWriteTool } from '@/tools/x'
+import { jsonToXmlTool } from '@/tools/xml'
 import {
   youtubeChannelInfoTool,
   youtubeChannelPlaylistsTool,
@@ -2189,6 +2190,7 @@ export const tools: Record<string, ToolConfig> = {
   x_read: xReadTool,
   x_search: xSearchTool,
   x_user: xUserTool,
+  json_to_xml: jsonToXmlTool,
   pinecone_fetch: pineconeFetchTool,
   pinecone_generate_embeddings: pineconeGenerateEmbeddingsTool,
   pinecone_search_text: pineconeSearchTextTool,
