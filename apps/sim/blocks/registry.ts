@@ -78,6 +78,7 @@ import { LinkupBlock } from '@/blocks/blocks/linkup'
 import { MailchimpBlock } from '@/blocks/blocks/mailchimp'
 import { MailgunBlock } from '@/blocks/blocks/mailgun'
 import { ManualTriggerBlock } from '@/blocks/blocks/manual_trigger'
+import { MathHelperBlock } from '@/blocks/blocks/math_helper'
 import { McpBlock } from '@/blocks/blocks/mcp'
 import { Mem0Block } from '@/blocks/blocks/mem0'
 import { MemoryBlock } from '@/blocks/blocks/memory'
@@ -142,6 +143,7 @@ import { SttBlock, SttV2Block } from '@/blocks/blocks/stt'
 import { SupabaseBlock } from '@/blocks/blocks/supabase'
 import { TavilyBlock } from '@/blocks/blocks/tavily'
 import { TelegramBlock } from '@/blocks/blocks/telegram'
+import { TextHelperBlock } from '@/blocks/blocks/text_helper'
 import { TextractBlock, TextractV2Block } from '@/blocks/blocks/textract'
 import { ThinkingBlock } from '@/blocks/blocks/thinking'
 import { TinybirdBlock } from '@/blocks/blocks/tinybird'
@@ -266,6 +268,7 @@ export const registry: Record<string, BlockConfig> = {
   mailchimp: MailchimpBlock,
   mailgun: MailgunBlock,
   manual_trigger: ManualTriggerBlock,
+  math_helper: MathHelperBlock,
   mcp: McpBlock,
   mem0: Mem0Block,
   memory: MemoryBlock,
@@ -334,6 +337,7 @@ export const registry: Record<string, BlockConfig> = {
   supabase: SupabaseBlock,
   tavily: TavilyBlock,
   telegram: TelegramBlock,
+  text_helper: TextHelperBlock,
   textract: TextractBlock,
   textract_v2: TextractV2Block,
   thinking: ThinkingBlock,

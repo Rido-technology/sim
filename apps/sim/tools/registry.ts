@@ -1101,6 +1101,24 @@ import {
   mailgunListMessagesTool,
   mailgunSendMessageTool,
 } from '@/tools/mailgun'
+import {
+  mathAbsTool,
+  mathAddTool,
+  mathCeilTool,
+  mathClampTool,
+  mathDivideTool,
+  mathFloorTool,
+  mathMaxTool,
+  mathMinTool,
+  mathModuloTool,
+  mathMultiplyTool,
+  mathPercentageTool,
+  mathPowerTool,
+  mathRandomTool,
+  mathRoundTool,
+  mathSqrtTool,
+  mathSubtractTool,
+} from '@/tools/math_helper'
 import { mem0AddMemoriesTool, mem0GetMemoriesTool, mem0SearchMemoriesTool } from '@/tools/mem0'
 import { memoryAddTool, memoryDeleteTool, memoryGetAllTool, memoryGetTool } from '@/tools/memory'
 import {
@@ -1750,6 +1768,18 @@ import {
   telegramSendPhotoTool,
   telegramSendVideoTool,
 } from '@/tools/telegram'
+import {
+  defaultValueTool,
+  htmlToMarkdownTool,
+  listToTableTool,
+  markdownToHtmlTool,
+  slugifyTool,
+  stripHtmlTool,
+  textConcatenateTool,
+  textReplaceTool,
+  textSearchTool,
+  textSplitTool,
+} from '@/tools/text_helper'
 import { textractParserTool, textractParserV2Tool } from '@/tools/textract'
 import { thinkingTool } from '@/tools/thinking'
 import { tinybirdEventsTool, tinybirdQueryTool } from '@/tools/tinybird'
@@ -2993,6 +3023,22 @@ export const tools: Record<string, ToolConfig> = {
   tinybird_query: tinybirdQueryTool,
   stagehand_extract: stagehandExtractTool,
   stagehand_agent: stagehandAgentTool,
+  math_helper_abs: mathAbsTool,
+  math_helper_add: mathAddTool,
+  math_helper_ceil: mathCeilTool,
+  math_helper_clamp: mathClampTool,
+  math_helper_divide: mathDivideTool,
+  math_helper_floor: mathFloorTool,
+  math_helper_max: mathMaxTool,
+  math_helper_min: mathMinTool,
+  math_helper_modulo: mathModuloTool,
+  math_helper_multiply: mathMultiplyTool,
+  math_helper_percentage: mathPercentageTool,
+  math_helper_power: mathPowerTool,
+  math_helper_random: mathRandomTool,
+  math_helper_round: mathRoundTool,
+  math_helper_sqrt: mathSqrtTool,
+  math_helper_subtract: mathSubtractTool,
   mem0_add_memories: mem0AddMemoriesTool,
   mem0_search_memories: mem0SearchMemoriesTool,
   mem0_get_memories: mem0GetMemoriesTool,
@@ -3048,6 +3094,16 @@ export const tools: Record<string, ToolConfig> = {
   telegram_send_photo: telegramSendPhotoTool,
   telegram_send_video: telegramSendVideoTool,
   telegram_send_document: telegramSendDocumentTool,
+  text_helper_split: textSplitTool,
+  text_helper_concatenate: textConcatenateTool,
+  text_helper_replace: textReplaceTool,
+  text_helper_search: textSearchTool,
+  text_helper_markdown_to_html: markdownToHtmlTool,
+  text_helper_html_to_markdown: htmlToMarkdownTool,
+  text_helper_strip_html: stripHtmlTool,
+  text_helper_slugify: slugifyTool,
+  text_helper_default_value: defaultValueTool,
+  text_helper_list_to_table: listToTableTool,
   clay_populate: clayPopulateTool,
   clickup_get_workspace: clickupGetWorkspaceTool,
   clickup_list_spaces: clickupListSpacesTool,
