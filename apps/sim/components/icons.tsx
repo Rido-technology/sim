@@ -4652,6 +4652,77 @@ export function TextractIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MathHelperIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 6L22 20M22 6L8 20M4 13H26M15 4V26"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx="7"
+        cy="7"
+        r="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+      />
+      <circle
+        cx="23"
+        cy="23"
+        r="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+export function TextHelperIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 8h18M6 15h12M6 22h18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 12l4 4-4 4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle
+        cx="4"
+        cy="4"
+        r="1.5"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function McpIcon(props: SVGProps<SVGSVGElement>) {
   const id = useId();
   const clipId = `mcp_clip_${id}`;
