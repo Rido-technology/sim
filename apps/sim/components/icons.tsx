@@ -2787,6 +2787,59 @@ export function WealthboxIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function ImageHelperIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width='1em'
+      height='1em'
+      viewBox='0 0 24 24'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <rect
+        x='2'
+        y='3'
+        width='16'
+        height='13'
+        rx='1.5'
+        stroke='currentColor'
+        strokeWidth='1.6'
+        fill='none'
+      />
+      <circle cx='6.5' cy='7.5' r='1.5' fill='currentColor' />
+      <path
+        d='M2 13.5L6 9l3.5 4L12 10.5l6 5.5'
+        stroke='currentColor'
+        strokeWidth='1.6'
+        strokeLinejoin='round'
+        strokeLinecap='round'
+        fill='none'
+      />
+      <path
+        d='M17.5 15.5 L22 20'
+        stroke='currentColor'
+        strokeWidth='1.8'
+        strokeLinecap='round'
+      />
+      <circle
+        cx='16'
+        cy='14'
+        r='3'
+        stroke='currentColor'
+        strokeWidth='1.6'
+        fill='none'
+      />
+      <path
+        d='M14.88 12.88 L17.12 15.12'
+        stroke='currentColor'
+        strokeWidth='1.4'
+        strokeLinecap='round'
+      />
+    </svg>
+  )
+}
+
 export function WebhookIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
