@@ -158,6 +158,7 @@ import { WordPressBlock } from '@/blocks/blocks/wordpress'
 import { WorkflowBlock } from '@/blocks/blocks/workflow'
 import { WorkflowInputBlock } from '@/blocks/blocks/workflow_input'
 import { XBlock } from '@/blocks/blocks/x'
+import { XmlBlock } from '@/blocks/blocks/xml'
 import { YouTubeBlock } from '@/blocks/blocks/youtube'
 import { ZendeskBlock } from '@/blocks/blocks/zendesk'
 import { ZepBlock } from '@/blocks/blocks/zep'
@@ -345,6 +346,7 @@ export const registry: Record<string, BlockConfig> = {
   workflow: WorkflowBlock,
   workflow_input: WorkflowInputBlock,
   x: XBlock,
+  xml: XmlBlock,
   youtube: YouTubeBlock,
   zendesk: ZendeskBlock,
   zep: ZepBlock,
