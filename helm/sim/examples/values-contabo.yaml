@@ -59,6 +59,10 @@ app:
     S3_COPILOT_BUCKET: "copilot-files"
     S3_PROFILE_PICTURES_BUCKET: "profile-pictures"
     S3_OG_IMAGES_BUCKET: "og-images"
+    TRIGGER_PROJECT_ID: proj_wzaqgpotfypqhyeusdji
+    TRIGGER_SECRET_KEY: tr_prod_UNw0TrPbZpHVxALwFPLO
+    TRIGGER_DEV_ENABLED: true
+    TRIGGER_API_URL: https://trigger.testing-ai.online
 
 # Realtime service (WebSocket)
 realtime:
@@ -80,6 +84,10 @@ realtime:
     BETTER_AUTH_SECRET: "ef3a0182e91a0ac58fc8ef71477efe45bc84d6b7e7f69eb5ab658664ad0a8bbc"
     ALLOWED_ORIGINS: "https://sim.testing-ai.online"
     NODE_ENV: "production"
+    TRIGGER_PROJECT_ID: proj_wzaqgpotfypqhyeusdji
+    TRIGGER_SECRET_KEY: tr_prod_UNw0TrPbZpHVxALwFPLO
+    TRIGGER_DEV_ENABLED: true
+    TRIGGER_API_URL: https://trigger.testing-ai.online
 
 # Database migrations
 migrations:
