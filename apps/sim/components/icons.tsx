@@ -2787,6 +2787,41 @@ export function WealthboxIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function GraphQLIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width='1em'
+      height='1em'
+      viewBox='0 0 24 24'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M12 2L3.34 7V17L12 22L20.66 17V7L12 2Z'
+        stroke='currentColor'
+        strokeWidth='1.6'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <path
+        d='M12 22V12M12 12L3.34 7M12 12L20.66 7'
+        stroke='currentColor'
+        strokeWidth='1.6'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+      <circle cx='12' cy='12' r='2.5' stroke='currentColor' strokeWidth='1.6' />
+      <circle cx='12' cy='2' r='1.5' fill='currentColor' />
+      <circle cx='12' cy='22' r='1.5' fill='currentColor' />
+      <circle cx='3.34' cy='7' r='1.5' fill='currentColor' />
+      <circle cx='20.66' cy='17' r='1.5' fill='currentColor' />
+      <circle cx='3.34' cy='17' r='1.5' fill='currentColor' />
+      <circle cx='20.66' cy='7' r='1.5' fill='currentColor' />
+    </svg>
+  )
+}
+
 export function WebhookIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
