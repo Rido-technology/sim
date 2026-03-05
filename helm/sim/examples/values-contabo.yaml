@@ -19,7 +19,7 @@ app:
     # --- DOMAIN CONFIGURATION ---
     NEXT_PUBLIC_APP_URL: "https://sim.testing-ai.online"
     BETTER_AUTH_URL: "https://sim.testing-ai.online"
-    NEXT_PUBLIC_SOCKET_URL: "https://sim-ws.testing-ai.online"
+    NEXT_PUBLIC_SOCKET_URL: "https://real-time-sim.testing-ai.online"
 
     # --- SECURITY SECRETS ---
     # Generated using: openssl rand -hex 32
