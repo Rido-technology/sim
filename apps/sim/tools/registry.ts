@@ -288,6 +288,14 @@ import {
   exaResearchTool,
   exaSearchTool,
 } from '@/tools/exa'
+import {
+  imageToBase64Tool,
+  getImageMetadataTool,
+  cropImageTool,
+  rotateImageTool,
+  resizeImageTool,
+  compressImageTool,
+} from '@/tools/image_helper'
 import { fileParserV2Tool, fileParserV3Tool, fileParseTool } from '@/tools/file'
 import {
   firecrawlAgentTool,
@@ -2241,6 +2249,12 @@ export const tools: Record<string, ToolConfig> = {
   dropbox_get_metadata: dropboxGetMetadataTool,
   dropbox_create_shared_link: dropboxCreateSharedLinkTool,
   dropbox_search: dropboxSearchTool,
+  image_to_base64: imageToBase64Tool,
+  get_image_metadata: getImageMetadataTool,
+  crop_image: cropImageTool,
+  rotate_image: rotateImageTool,
+  resize_image: resizeImageTool,
+  compress_image: compressImageTool,
   duckduckgo_search: duckduckgoSearchTool,
   dspy_predict: predictTool,
   dspy_chain_of_thought: chainOfThoughtTool,

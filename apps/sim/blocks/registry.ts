@@ -58,6 +58,7 @@ import { HuggingFaceBlock } from '@/blocks/blocks/huggingface'
 import { HumanInTheLoopBlock } from '@/blocks/blocks/human_in_the_loop'
 import { HunterBlock } from '@/blocks/blocks/hunter'
 import { ImageGeneratorBlock } from '@/blocks/blocks/image_generator'
+import { ImageHelperBlock } from '@/blocks/blocks/image_helper'
 import { ImapBlock } from '@/blocks/blocks/imap'
 import { IncidentioBlock } from '@/blocks/blocks/incidentio'
 import { InputTriggerBlock } from '@/blocks/blocks/input_trigger'
@@ -236,6 +237,7 @@ export const registry: Record<string, BlockConfig> = {
   human_in_the_loop: HumanInTheLoopBlock,
   hunter: HunterBlock,
   image_generator: ImageGeneratorBlock,
+  image_helper: ImageHelperBlock,
   imap: ImapBlock,
   incidentio: IncidentioBlock,
   input_trigger: InputTriggerBlock,
