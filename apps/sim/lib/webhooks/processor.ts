@@ -16,6 +16,7 @@ import {
   handleWhatsAppVerification,
   validateCalcomSignature,
   validateCirclebackSignature,
+  validateClockifyWebhook,
   validateFacebookSignature,
   validateFirefliesSignature,
   validateGitHubSignature,
@@ -29,6 +30,7 @@ import {
 import { getWorkspaceBilledAccountUserId } from '@/lib/workspaces/utils'
 import { executeWebhookJob } from '@/background/webhook-execution'
 import { resolveEnvVarReferences } from '@/executor/utils/reference-validation'
+import { isClockifyEventMatch, getClockifyEventType, shouldTriggerClockifyEvent } from '@/triggers/clockify/utils'
 import { isGitHubEventMatch } from '@/triggers/github/utils'
 import { isHubSpotContactEventMatch } from '@/triggers/hubspot/utils'
 import { isJiraEventMatch } from '@/triggers/jira/utils'
@@ -814,6 +816,51 @@ export async function verifyProviderAuth(
     }
   }
 
+  if (foundWebhook.provider === 'clockify') {
+    const webhookSecret = providerConfig.webhookSecret as string | undefined
+
+    if (webhookSecret) {
+      const signatureHeader = request.headers.get('clockify-signature')
+
+      if (!signatureHeader) {
+        logger.warn(`[${requestId}] Clockify webhook missing Clockify-Signature header`)
+        return new NextResponse('Unauthorized - Missing Clockify webhook signature', { status: 401 })
+      }
+
+      const isValidAuth = validateClockifyWebhook(webhookSecret, signatureHeader)
+
+      if (!isValidAuth) {
+        logger.warn(`[${requestId}] Clockify webhook authentication failed`, {
+          signatureLength: signatureHeader.length,
+          secretLength: webhookSecret.length,
+        })
+        return new NextResponse('Unauthorized - Invalid Clockify webhook signature', { status: 401 })
+      }
+
+      logger.info(`[${requestId}]  Clockify webhook authenticated successfully`)
+      
+      // Log payload if parseable
+      try {
+        const payload = JSON.parse(rawBody)
+        logger.info(`[${requestId}]  Clockify webhook payload:`, {
+          payload,
+          headers: {
+            'clockify-signature': signatureHeader.substring(0, 10) + '...',
+            'content-type': request.headers.get('content-type'),
+          },
+        })
+      } catch {
+        logger.info(`[${requestId}]  Clockify webhook received`, {
+          bodySize: rawBody.length,
+          headers: {
+            'clockify-signature': signatureHeader.substring(0, 10) + '...',
+            'content-type': request.headers.get('content-type'),
+          },
+        })
+      }
+    }
+  }
+
   if (foundWebhook.provider === 'generic') {
     if (providerConfig.requireAuth) {
       const configToken = providerConfig.token
@@ -1015,6 +1062,72 @@ export async function queueWebhookExecution(
             workflowId: foundWorkflow.id,
             triggerId,
             receivedEvent: subscriptionType,
+          }
+        )
+      }
+    }
+
+    // Clockify event filtering for event-specific triggers
+    if (foundWebhook.provider === 'clockify') {
+      const providerConfig = (foundWebhook.providerConfig as Record<string, any>) || {}
+      const triggerId = providerConfig.triggerId as string | undefined
+      const configuredEventTypes = providerConfig.eventTypes as string[] | undefined
+      const filterByProject = providerConfig.filterByProject as string | undefined
+      const filterByUser = providerConfig.filterByUser as string | undefined
+
+      if (triggerId === 'clockify_webhook' && configuredEventTypes) {
+        const headers = Object.fromEntries(request.headers.entries())
+        const eventType = getClockifyEventType(body, headers)
+
+        if (!eventType) {
+          logger.warn(
+            `[${options.requestId}] ❌ Could not determine Clockify event type from payload`,
+            {
+              webhookId: foundWebhook.id,
+              workflowId: foundWorkflow.id,
+              triggerId,
+              payloadKeys: Object.keys(body),
+              payloadSample: JSON.stringify(body).substring(0, 200),
+              headerEventType: headers['clockify-webhook-event-type'],
+            }
+          )
+
+          return NextResponse.json({
+            message: 'Could not determine event type from payload. Ignoring.',
+          })
+        }
+        
+        logger.info(`[${options.requestId}] 🔍 Clockify event detected: ${eventType}`)
+
+        if (!shouldTriggerClockifyEvent(eventType, configuredEventTypes, body, filterByProject, filterByUser)) {
+          logger.info(
+            `[${options.requestId}] ⏭️  Clockify event filtered out: ${eventType}`,
+            {
+              webhookId: foundWebhook.id,
+              workflowId: foundWorkflow.id,
+              triggerId,
+              receivedEvent: eventType,
+              configuredEventTypes,
+              filterByProject,
+              filterByUser,
+              reason: !configuredEventTypes.includes(eventType) ? 'Event type not selected' : 'Filter condition not met',
+            }
+          )
+
+          return NextResponse.json({
+            message: 'Event type does not match trigger configuration or filters. Ignoring.',
+          })
+        }
+
+        logger.info(
+          `[${options.requestId}] ✅ Clockify event MATCHED - Triggering workflow`,
+          {
+            webhookId: foundWebhook.id,
+            workflowId: foundWorkflow.id,
+            triggerId,
+            receivedEvent: eventType,
+            configuredEventTypes,
+            eventData: body,
           }
         )
       }

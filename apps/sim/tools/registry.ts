@@ -98,6 +98,19 @@ import {
 } from '@/tools/calendly'
 import { clayPopulateTool } from '@/tools/clay'
 import {
+  clockifyCreateTaskTool,
+  clockifyCreateTimeEntryTool,
+  clockifyCustomApiTool,
+  clockifyGetCurrentTimerTool,
+  clockifyGetProjectsTool,
+  clockifyGetTaskTool,
+  clockifyGetTimeEntriesTool,
+  clockifyGetWorkspacesTool,
+  clockifyGetWorkspaceDetailsTool,
+  clockifyStartTimerTool,
+  clockifyStopTimerTool,
+} from '@/tools/clockify'
+import {
   clickupAddCommentTool,
   clickupCreateTaskTool,
   clickupGetTaskTool,
@@ -1401,6 +1414,7 @@ import {
 } from '@/tools/posthog'
 import { pulseParserTool, pulseParserV2Tool } from '@/tools/pulse'
 import { qdrantFetchTool, qdrantSearchTool, qdrantUpsertTool } from '@/tools/qdrant'
+import { qrCodeGenerateTool } from '@/tools/qrcode'
 import {
   rdsDeleteTool,
   rdsExecuteTool,
@@ -3105,6 +3119,17 @@ export const tools: Record<string, ToolConfig> = {
   text_helper_default_value: defaultValueTool,
   text_helper_list_to_table: listToTableTool,
   clay_populate: clayPopulateTool,
+  clockify_create_task: clockifyCreateTaskTool,
+  clockify_create_time_entry: clockifyCreateTimeEntryTool,
+  clockify_custom_api: clockifyCustomApiTool,
+  clockify_get_current_timer: clockifyGetCurrentTimerTool,
+  clockify_get_projects: clockifyGetProjectsTool,
+  clockify_get_task: clockifyGetTaskTool,
+  clockify_get_time_entries: clockifyGetTimeEntriesTool,
+  clockify_get_workspaces: clockifyGetWorkspacesTool,
+  clockify_get_workspace_details: clockifyGetWorkspaceDetailsTool,
+  clockify_start_timer: clockifyStartTimerTool,
+  clockify_stop_timer: clockifyStopTimerTool,
   clickup_get_workspace: clickupGetWorkspaceTool,
   clickup_list_spaces: clickupListSpacesTool,
   clickup_list_lists: clickupListListsTool,
@@ -3484,6 +3509,7 @@ export const tools: Record<string, ToolConfig> = {
   qdrant_fetch_points: qdrantFetchTool,
   qdrant_search_vector: qdrantSearchTool,
   qdrant_upsert_points: qdrantUpsertTool,
+  qrcode_generate: qrCodeGenerateTool,
   hunter_discover: hunterDiscoverTool,
   hunter_domain_search: hunterDomainSearchTool,
   hunter_email_finder: hunterEmailFinderTool,
