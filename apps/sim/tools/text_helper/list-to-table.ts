@@ -59,8 +59,8 @@ export const listToTableTool: ToolConfig<ListToTableParams, TextTableResult> = {
     let headers: string[] = []
     if (Array.isArray(params.headers)) {
       headers = params.headers.map(header => String(header))
-    } else if (typeof params.headers === 'string' && params.headers.trim()) {
-      headers = String(params.headers).split(',').map(header => header.trim()).filter(header => header.length > 0)
+    } else if (typeof params.headers === 'string' && (params.headers as string).trim()) {
+      headers = (params.headers as string).split(',').map(header => header.trim()).filter(header => header.length > 0)
     }
 
     const format = params.format === 'text' ? 'text' : 'markdown'

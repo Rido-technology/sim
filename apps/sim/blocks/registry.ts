@@ -15,6 +15,7 @@ import { CalendlyBlock } from '@/blocks/blocks/calendly'
 import { ChatTriggerBlock } from '@/blocks/blocks/chat_trigger'
 import { CirclebackBlock } from '@/blocks/blocks/circleback'
 import { ClayBlock } from '@/blocks/blocks/clay'
+import { ClockifyBlock } from '@/blocks/blocks/clockify'
 import { ClickUpBlock } from '@/blocks/blocks/clickup'
 import { ClerkBlock } from '@/blocks/blocks/clerk'
 import { ConditionBlock } from '@/blocks/blocks/condition'
@@ -111,6 +112,7 @@ import { PostgreSQLBlock } from '@/blocks/blocks/postgresql'
 import { PostHogBlock } from '@/blocks/blocks/posthog'
 import { PulseBlock, PulseV2Block } from '@/blocks/blocks/pulse'
 import { QdrantBlock } from '@/blocks/blocks/qdrant'
+import { QrCodeBlock } from '@/blocks/blocks/qrcode'
 import { RDSBlock } from '@/blocks/blocks/rds'
 import { RedditBlock } from '@/blocks/blocks/reddit'
 import { ReductoBlock, ReductoV2Block } from '@/blocks/blocks/reducto'
@@ -193,6 +195,7 @@ export const registry: Record<string, BlockConfig> = {
   chat_trigger: ChatTriggerBlock,
   circleback: CirclebackBlock,
   clay: ClayBlock,
+  clockify: ClockifyBlock,
   clickup: ClickUpBlock,
   clerk: ClerkBlock,
   condition: ConditionBlock,
@@ -302,6 +305,7 @@ export const registry: Record<string, BlockConfig> = {
   pulse: PulseBlock,
   pulse_v2: PulseV2Block,
   qdrant: QdrantBlock,
+  qrcode: QrCodeBlock,
   rds: RDSBlock,
   reddit: RedditBlock,
   reducto: ReductoBlock,

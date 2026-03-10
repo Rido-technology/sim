@@ -13,7 +13,6 @@ export const createItemTool: ToolConfig<
   name: '1Password Create Item',
   description: 'Create a new item in a vault',
   version: '1.0.0',
-
   params: {
     connectionMode: {
       type: 'string',

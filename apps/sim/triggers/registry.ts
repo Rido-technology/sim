@@ -21,6 +21,7 @@ import {
   circlebackMeetingNotesTrigger,
   circlebackWebhookTrigger,
 } from '@/triggers/circleback'
+import { clockifyWebhookTrigger } from '@/triggers/clockify'
 import {
   clickupTaskAssignedTrigger,
   clickupTaskCommentPostedTrigger,
@@ -174,6 +175,7 @@ export const TRIGGER_REGISTRY: TriggerRegistry = {
   circleback_meeting_completed: circlebackMeetingCompletedTrigger,
   circleback_meeting_notes: circlebackMeetingNotesTrigger,
   circleback_webhook: circlebackWebhookTrigger,
+  clockify_webhook: clockifyWebhookTrigger,
   clickup_webhook: clickupWebhookTrigger,
   clickup_task_created: clickupTaskCreatedTrigger,
   clickup_task_updated: clickupTaskUpdatedTrigger,

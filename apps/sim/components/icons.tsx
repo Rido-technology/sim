@@ -3266,20 +3266,20 @@ export function MicrosoftOneNoteIcon(props: SVGProps<SVGSVGElement>) {
     {...props}
     viewBox="0 0 32 32" fill="none" 
     xmlns="http://www.w3.org/2000/svg">
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-      <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-       stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
+      <g id="SVGRepo_bgCarrier" strokewidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokelinecap="round"
+       strokelinejoin="round"></g><g id="SVGRepo_iconCarrier">
          <path d="M8 23H32V28C32 29.1046 31.1046 30 30 30H10C8.89543 30 8 29.1046 8 28V23Z" fill="#5D29A1"></path> <rect x="8" y="16" width="24" height="7" fill="#7F32CC"></rect> <rect x="8" y="9" width="24"
           height="7" fill="#9A40D6"></rect> 
-          <path d="M10 2C8.89543 2 8 2.89543 8 4V28C8 29.1046 8.89543 30 10 30H24V9H32V4C32 2.89543 31.1046 2 30 2H10Z" fill="url(#paint0_linear_87_7733)"></path> <path d="M8 12C8 10.3431 9.34315 9 11 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H8V12Z" fill="#000000" fill-opacity="0.3"></path> 
+          <path d="M10 2C8.89543 2 8 2.89543 8 4V28C8 29.1046 8.89543 30 10 30H24V9H32V4C32 2.89543 31.1046 2 30 2H10Z" fill="url(#paint0_linear_87_7733)"></path> <path d="M8 12C8 10.3431 9.34315 9 11 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H8V12Z" fill="#000000" fillopacity="0.3"></path> 
           <rect y="7" width="18" height="18"
            rx="2" fill="url(#paint1_linear_87_7733)"></rect>
-            <path d="M13 21V11H10.8893V16.8286L6.9631 11H5V21H7.08118V14.9571L11.155 21H13Z" fill="white"></path> <defs> <linearGradient id="paint0_linear_87_7733" x1="8" y1="16" x2="24.5" y2="16" gradientUnits="userSpaceOnUse"> <stop stop-color="#8C42AC"></stop>
-             <stop offset="1" stop-color="#C36DEF"></stop> </linearGradient>
+            <path d="M13 21V11H10.8893V16.8286L6.9631 11H5V21H7.08118V14.9571L11.155 21H13Z" fill="white"></path> <defs> <linearGradient id="paint0_linear_87_7733" x1="8" y1="16" x2="24.5" y2="16" gradientUnits="userSpaceOnUse"> <stop stopColor="#8C42AC"></stop>
+             <stop offset="1" stopColor="#C36DEF"></stop> </linearGradient>
               <linearGradient id="paint1_linear_87_7733" x1="0" y1="16" 
               x2="19" y2="16" gradientUnits="userSpaceOnUse"> 
-              <stop stop-color="#44176C"></stop> <stop offset="1" 
-              stop-color="#621F9C"></stop> </linearGradient> </defs> </g></svg>
+              <stop stopColor="#44176C"></stop> <stop offset="1" 
+              stopColor="#621F9C"></stop> </linearGradient> </defs> </g></svg>
     
    
   );
@@ -3853,6 +3853,18 @@ export function AsanaIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function ClockifyIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+   <svg xmlns="http://www.w3.org/2000/svg"   {...props}  viewBox="0 0 48 48" fill="none">
+<path d="M37.6 0H10.4C4.65624 0 0 4.65624 0 10.4V37.6C0 43.3438 4.65624 48 10.4 48H37.6C43.3438 48 48 43.3438 48 37.6V10.4C48 4.65624 43.3438 0 37.6 0Z" fill="#03A9F4"/>
+<path d="M30.8805 13.6731C31.7201 12.834 31.5393 11.4239 30.4306 10.9992C28.8834 10.4067 27.2035 10.082 25.4478 10.082C17.7554 10.082 11.5195 16.3142 11.5195 24.002C11.5195 31.6898 17.7554 37.922 25.4478 37.922C27.1927 37.922 28.8627 37.6014 30.4019 37.0158C31.5136 36.5928 31.6961 35.18 30.855 34.3394C30.31 33.7947 29.4851 33.6676 28.7537 33.9106C27.717 34.255 26.6082 34.4415 25.4559 34.4415C19.6866 34.4415 15.0097 29.7673 15.0097 24.0015C15.0097 18.2356 19.6866 13.5615 25.4559 13.5615C26.6166 13.5615 27.7331 13.7507 28.7761 14.0999C29.5081 14.345 30.3346 14.2186 30.8805 13.6731Z" fill="white"/>
+<path d="M27.4276 24.082C27.4276 25.0484 26.6441 25.8319 25.6777 25.8319C24.7112 25.8319 23.9277 25.0484 23.9277 24.082C23.9277 23.1155 24.7112 22.332 25.6777 22.332C26.6441 22.332 27.4276 23.1155 27.4276 24.082Z" fill="white"/>
+<path d="M28.5346 21.3947C27.9077 20.7671 27.9077 19.7496 28.5346 19.122L33.7558 13.8945C34.3826 13.2669 35.399 13.2669 36.0258 13.8945C36.6527 14.5222 36.6527 15.5397 36.0258 16.1673L30.8047 21.3947C30.1778 22.0224 29.1615 22.0224 28.5346 21.3947Z" fill="white"/>
+<path d="M28.5346 26.6113C27.9077 27.2389 27.9077 28.2565 28.5346 28.8841L33.7558 34.1115C34.3826 34.7391 35.399 34.7391 36.0258 34.1115C36.6527 33.4839 36.6527 32.4663 36.0258 31.8387L30.8047 26.6113C30.1778 25.9837 29.1615 25.9837 28.5346 26.6113Z" fill="white"/>
+</svg>
+  );
+}
+
 export function ClickUpIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -3862,14 +3874,14 @@ export function ClickUpIcon(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M6.43828 50.2095C5.81176 49.4456 5.94882 48.3212 6.71918 47.7027L14.0169 41.8433C14.6535 41.3322 15.5841 41.4476 16.1032 42.0777C21.06 48.0956 26.32 50.8815 32.142 50.8815C37.9238 50.8815 43.0403 48.135 47.7801 42.1839C48.2888 41.5452 49.2172 41.4131 49.8629 41.9129L57.2604 47.6377C58.0415 48.2422 58.1989 49.3637 57.5855 50.1379C50.5775 58.9839 41.9971 63.6446 32.142 63.6446C22.3156 63.6446 13.6586 59.013 6.43828 50.2095Z"
         fill="url(#paint0_linear_8_569)"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M32.4953 17.1804C32.2202 16.9368 31.8067 16.9367 31.5314 17.1801L15.663 31.2116C15.0564 31.748 14.1285 31.6857 13.599 31.0731L7.40986 23.9122C6.88774 23.3082 6.95019 22.3961 7.54979 21.8688L31.0527 1.20062C31.6021 0.717503 32.4248 0.717611 32.9741 1.20088L56.4822 21.8847C57.0822 22.4125 57.1439 23.3256 56.6205 23.9294L50.4164 31.0866C49.8862 31.6982 48.9589 31.7594 48.353 31.2229L32.4953 17.1804Z"
         fill="url(#paint1_linear_8_569)"
       />
@@ -3882,8 +3894,8 @@ export function ClickUpIcon(props: SVGProps<SVGSVGElement>) {
           y2="32.1624"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.225962" stop-color="#6647F0" />
-          <stop offset="0.793269" stop-color="#0091FF" />
+          <stop offset="0.225962" stopColor="#6647F0" />
+          <stop offset="0.793269" stopColor="#0091FF" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_8_569"
@@ -3893,8 +3905,8 @@ export function ClickUpIcon(props: SVGProps<SVGSVGElement>) {
           y2="31.6447"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FF02F0" />
-          <stop offset="0.778846" stop-color="#F76808" />
+          <stop stopColor="#FF02F0" />
+          <stop offset="0.778846" stopColor="#F76808" />
         </linearGradient>
       </defs>
     </svg>
@@ -6126,6 +6138,27 @@ export function VercelIcon(props: SVGProps<SVGSVGElement>) {
       <g transform="translate(19.2 16.63) scale(0.85)">
         <polygon fill="#fafafa" points="128 0 256 221.705007 0 221.705007" />
       </g>
+    </svg>
+  );
+}
+
+export function QrCodeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="3" y="3" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="2" />
+      <rect x="6" y="6" width="4" height="4" fill="currentColor" />
+      <rect x="17" y="3" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="2" />
+      <rect x="20" y="6" width="4" height="4" fill="currentColor" />
+      <rect x="3" y="17" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="2" />
+      <rect x="6" y="20" width="4" height="4" fill="currentColor" />
+      <path d="M17 17h3v3h-3zM23 17h4v3h-4zM17 23h4v4h-4zM23 23h4v4h-4z" fill="currentColor" />
     </svg>
   );
 }

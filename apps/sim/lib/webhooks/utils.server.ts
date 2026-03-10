@@ -2878,3 +2878,36 @@ export function validateCalcomSignature(secret: string, signature: string, body:
     return false
   }
 }
+
+/**
+ * Validate Clockify webhook authentication
+ * Clockify uses simple token-based authentication via Clockify-Signature header
+ * @param webhookSecret - Webhook secret token configured in Clockify
+ * @param signatureHeader - Clockify-Signature header value from the request  
+ * @returns Whether the authentication is valid
+ */
+export function validateClockifyWebhook(webhookSecret: string, signatureHeader: string | null): boolean {
+  try {
+    if (!webhookSecret || !signatureHeader) {
+      logger.warn('Clockify webhook validation missing required fields', {
+        hasSecret: !!webhookSecret,
+        hasSignature: !!signatureHeader,
+      })
+      return false
+    }
+
+    // Clockify sends webhook secret token directly in Clockify-Signature header
+    const isValid = safeCompare(webhookSecret, signatureHeader)
+    
+    logger.debug('Clockify webhook authentication', {
+      providedSignature: `${signatureHeader.substring(0, 10)}...`,
+      expectedSecret: `${webhookSecret.substring(0, 10)}...`,
+      match: isValid,
+    })
+
+    return isValid
+  } catch (error) {
+    logger.error('Error validating Clockify webhook:', error)
+    return false
+  }
+}
