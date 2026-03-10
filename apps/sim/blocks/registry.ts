@@ -51,6 +51,7 @@ import { GoogleSlidesBlock, GoogleSlidesV2Block } from '@/blocks/blocks/google_s
 import { GoogleVaultBlock } from '@/blocks/blocks/google_vault'
 import { GrafanaBlock } from '@/blocks/blocks/grafana'
 import { GrainBlock } from '@/blocks/blocks/grain'
+import { GraphQLBlock } from '@/blocks/blocks/graphql'
 import { GreptileBlock } from '@/blocks/blocks/greptile'
 import { GuardrailsBlock } from '@/blocks/blocks/guardrails'
 import { HubSpotBlock } from '@/blocks/blocks/hubspot'
@@ -229,6 +230,7 @@ export const registry: Record<string, BlockConfig> = {
   google_vault: GoogleVaultBlock,
   grafana: GrafanaBlock,
   grain: GrainBlock,
+  graphql: GraphQLBlock,
   greptile: GreptileBlock,
   guardrails: GuardrailsBlock,
   hubspot: HubSpotBlock,
