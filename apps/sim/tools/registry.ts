@@ -684,6 +684,7 @@ import {
   grainListRecordingsTool,
   grainListTeamsTool,
 } from '@/tools/grain'
+import { graphqlRequestTool } from '@/tools/graphql'
 import {
   greptileIndexRepoTool,
   greptileQueryTool,
@@ -2460,6 +2461,7 @@ export const tools: Record<string, ToolConfig> = {
   grain_create_hook: grainCreateHookTool,
   grain_list_hooks: grainListHooksTool,
   grain_delete_hook: grainDeleteHookTool,
+  graphql_request: graphqlRequestTool,
   greptile_query: greptileQueryTool,
   greptile_search: greptileSearchTool,
   greptile_index_repo: greptileIndexRepoTool,
