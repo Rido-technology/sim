@@ -21,6 +21,7 @@ import { ConfluenceBlock, ConfluenceV2Block } from '@/blocks/blocks/confluence'
 import { CursorBlock, CursorV2Block } from '@/blocks/blocks/cursor'
 import { DatadogBlock } from '@/blocks/blocks/datadog'
 import { DiscordBlock } from '@/blocks/blocks/discord'
+import { DiscourseBlock } from '@/blocks/blocks/discourse'
 import { DropboxBlock } from '@/blocks/blocks/dropbox'
 import { DSPyBlock } from '@/blocks/blocks/dspy'
 import { DuckDuckGoBlock } from '@/blocks/blocks/duckduckgo'
@@ -191,6 +192,7 @@ export const registry: Record<string, BlockConfig> = {
   cursor_v2: CursorV2Block,
   datadog: DatadogBlock,
   discord: DiscordBlock,
+  discourse: DiscourseBlock,
   dropbox: DropboxBlock,
   dspy: DSPyBlock,
   duckduckgo: DuckDuckGoBlock,
