@@ -1,0 +1,5 @@
+export { discourseAddUsersToGroupTool } from '@/tools/discourse/add_users_to_group'
+export { discourseChangeTrustLevelTool } from '@/tools/discourse/change_trust_level'
+export { discourseCreatePostTool } from '@/tools/discourse/create_post'
+export { discourseCreateTopicTool } from '@/tools/discourse/create_topic'
+export { discourseSendPrivateMessageTool } from '@/tools/discourse/send_private_message'

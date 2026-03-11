@@ -212,6 +212,13 @@ import {
   discordUpdateRoleTool,
 } from '@/tools/discord'
 import {
+  discourseAddUsersToGroupTool,
+  discourseChangeTrustLevelTool,
+  discourseCreatePostTool,
+  discourseCreateTopicTool,
+  discourseSendPrivateMessageTool,
+} from '@/tools/discourse'
+import {
   dropboxCopyTool,
   dropboxCreateFolderTool,
   dropboxCreateSharedLinkTool,
@@ -1981,6 +1988,13 @@ export const tools: Record<string, ToolConfig> = {
   jsm_add_participants: jsmAddParticipantsTool,
   jsm_get_approvals: jsmGetApprovalsTool,
   jsm_answer_approval: jsmAnswerApprovalTool,
+  keycloak_get_users: keycloakGetUsersTool,
+  keycloak_create_user: keycloakCreateUserTool,
+  keycloak_update_user: keycloakUpdateUserTool,
+  keycloak_delete_user: keycloakDeleteUserTool,
+  keycloak_reset_password: keycloakResetPasswordTool,
+  keycloak_assign_realm_role: keycloakAssignRealmRoleTool,
+  keycloak_add_to_group: keycloakAddToGroupTool,
   kalshi_get_markets: kalshiGetMarketsTool,
   kalshi_get_markets_v2: kalshiGetMarketsV2Tool,
   kalshi_get_market: kalshiGetMarketTool,
