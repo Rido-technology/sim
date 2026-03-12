@@ -21,7 +21,7 @@ import { getFromEmailAddress } from '@/lib/messaging/email/utils'
 import {
   InvitationsNotAllowedError,
   validateInvitationsAllowed,
-} from '@/ee/access-control/utils/permission-check'
+} from '@/lib/permission-groups/server-utils'
 
 export const dynamic = 'force-dynamic'
 

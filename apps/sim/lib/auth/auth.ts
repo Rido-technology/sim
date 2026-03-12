@@ -28,6 +28,7 @@ import { authorizeSubscriptionReference } from '@/lib/billing/authorization'
 import { handleNewUser } from '@/lib/billing/core/usage'
 import {
   ensureOrganizationForTeamSubscription,
+  ensureOrganizationForUser,
   syncSubscriptionUsageLimits,
 } from '@/lib/billing/organization'
 import { getPlans, resolvePlanFromStripeSubscription } from '@/lib/billing/plans'
@@ -59,7 +60,7 @@ import { sendEmail } from '@/lib/messaging/email/mailer'
 import { getFromEmailAddress, getPersonalEmailFrom } from '@/lib/messaging/email/utils'
 import { quickValidateEmail } from '@/lib/messaging/email/validation'
 import { syncAllWebhooksForCredentialSet } from '@/lib/webhooks/utils.server'
-import { SSO_TRUSTED_PROVIDERS } from '@/ee/sso/constants'
+import { SSO_TRUSTED_PROVIDERS } from '@/lib/sso/constants'
 import { createAnonymousSession, ensureAnonymousUserExists } from './anonymous'
 
 const logger = createLogger('Auth')
@@ -118,6 +119,24 @@ export const auth = betterAuth({
               userId: user.id,
               error,
             })
+          }
+
+          if (isOrganizationsEnabled) {
+            try {
+              const result = await ensureOrganizationForUser(user.id, {
+                organizationName: user.name || undefined,
+              })
+              logger.info('[databaseHooks.user.create.after] Ensured organization for user', {
+                userId: user.id,
+                organizationId: result.organizationId,
+                created: result.created,
+              })
+            } catch (error) {
+              logger.error('[databaseHooks.user.create.after] Failed to ensure organization', {
+                userId: user.id,
+                error,
+              })
+            }
           }
 
           if (isHosted && user.email && user.emailVerified) {

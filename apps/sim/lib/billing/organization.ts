@@ -129,6 +129,51 @@ export async function createOrganizationForTeamPlan(
   }
 }
 
+export interface EnsureOrganizationForUserOptions {
+  organizationName?: string
+  organizationSlug?: string
+  metadata?: Record<string, unknown>
+}
+
+export async function ensureOrganizationForUser(
+  userId: string,
+  options?: EnsureOrganizationForUserOptions
+): Promise<{ organizationId: string; created: boolean }> {
+  const existingMembership = await db
+    .select({ organizationId: member.organizationId })
+    .from(member)
+    .where(eq(member.userId, userId))
+    .limit(1)
+
+  if (existingMembership.length > 0) {
+    return { organizationId: existingMembership[0].organizationId, created: false }
+  }
+
+  const [userData] = await db
+    .select({ name: user.name, email: user.email })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1)
+
+  const organizationName =
+    options?.organizationName || userData?.name || `${userData?.email || 'User'}'s Workspace`
+  const organizationSlug = options?.organizationSlug || `${userId}-workspace-${Date.now()}`
+
+  const organizationId = await createOrganizationWithOwner(userId, organizationName, organizationSlug, {
+    createdForUser: true,
+    originalUserId: userId,
+    ...options?.metadata,
+  })
+
+  logger.info('Created organization for user', {
+    userId,
+    organizationId,
+    organizationName,
+  })
+
+  return { organizationId, created: true }
+}
+
 export async function ensureOrganizationForTeamSubscription(
   subscription: SubscriptionData
 ): Promise<SubscriptionData> {

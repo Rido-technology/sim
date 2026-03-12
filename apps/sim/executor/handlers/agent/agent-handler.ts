@@ -12,7 +12,7 @@ import {
   validateMcpToolsAllowed,
   validateModelProvider,
   validateSkillsAllowed,
-} from '@/ee/access-control/utils/permission-check'
+} from '@/lib/permission-groups/server-utils'
 import { AGENT, BlockType, DEFAULTS, REFERENCE, stripCustomToolPrefix } from '@/executor/constants'
 import { memoryService } from '@/executor/handlers/agent/memory'
 import {
