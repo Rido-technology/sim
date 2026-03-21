@@ -34,12 +34,7 @@ dump.rdb
 *.pem
 
 # env files
-.env
 *.env
-.env.local
-.env.development
-.env.test
-.env.production
 
 # vercel
 .vercel
@@ -80,3 +75,4 @@ i18n.cache
 ## Claude Code
 .claude/launch.json
 .claude/worktrees/
+config.bat
