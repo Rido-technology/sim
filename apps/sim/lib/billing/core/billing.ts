@@ -216,6 +216,10 @@ export async function getSimplifiedBillingSummary(
   status: string | null
   seats: number | null
   metadata: any
+  paymentProvider: 'stripe' | 'tap'
+  tapCustomerId: string | null
+  tapPaymentAgreementId: string | null
+  tapSubscriptionId: string | null
   stripeSubscriptionId: string | null
   periodEnd: Date | string | null
   cancelAtPeriodEnd?: boolean
@@ -347,7 +351,11 @@ export async function getSimplifiedBillingSummary(
         status: subscription.status || null,
         seats: subscription.seats || null,
         metadata: subscription.metadata || null,
+        paymentProvider: subscription.paymentProvider === 'tap' ? 'tap' : 'stripe',
         stripeSubscriptionId: subscription.stripeSubscriptionId || null,
+        tapCustomerId: subscription.tapCustomerId || null,
+        tapPaymentAgreementId: subscription.tapPaymentAgreementId || null,
+        tapSubscriptionId: subscription.tapSubscriptionId || null,
         periodEnd: subscription.periodEnd || null,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd || undefined,
         // Usage details
@@ -469,7 +477,11 @@ export async function getSimplifiedBillingSummary(
       status: subscription?.status || null,
       seats: subscription?.seats || null,
       metadata: subscription?.metadata || null,
+      paymentProvider: subscription?.paymentProvider === 'tap' ? 'tap' : 'stripe',
       stripeSubscriptionId: subscription?.stripeSubscriptionId || null,
+      tapCustomerId: subscription?.tapCustomerId || null,
+      tapPaymentAgreementId: subscription?.tapPaymentAgreementId || null,
+      tapSubscriptionId: subscription?.tapSubscriptionId || null,
       periodEnd: subscription?.periodEnd || null,
       cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd || undefined,
       // Usage details
@@ -518,7 +530,11 @@ function getDefaultBillingSummary(type: 'individual' | 'organization') {
     status: null,
     seats: null,
     metadata: null,
+    paymentProvider: 'stripe' as const,
     stripeSubscriptionId: null,
+    tapCustomerId: null,
+    tapPaymentAgreementId: null,
+    tapSubscriptionId: null,
     periodEnd: null,
     // Usage details
     usage: {

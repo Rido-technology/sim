@@ -29,7 +29,11 @@ export interface SubscriptionData {
   status: string | null
   seats: number | null
   metadata: any | null
+  paymentProvider?: 'stripe' | 'tap'
   stripeSubscriptionId: string | null
+  tapCustomerId?: string | null
+  tapPaymentAgreementId?: string | null
+  tapSubscriptionId?: string | null
   periodEnd: Date | null
   cancelAtPeriodEnd?: boolean
   usage: UsageData
