@@ -12,16 +12,82 @@ const CONSTANTS = {
   INITIAL_TEAM_SEATS: 1,
 } as const
 
+type PaymentProviderId = 'stripe' | 'tap'
+
 export function useSubscriptionUpgrade() {
   const { data: session } = useSession()
   const betterAuthSubscription = useSubscription()
   const queryClient = useQueryClient()
 
   const handleUpgrade = useCallback(
-    async (targetPlan: TargetPlan) => {
+    async (targetPlan: TargetPlan, provider: PaymentProviderId) => {
       const userId = session?.user?.id
       if (!userId) {
         throw new Error('User not authenticated')
+      }
+
+      if (provider === 'tap') {
+        const successUrlObj = new URL(window.location.href)
+        successUrlObj.searchParams.set('upgraded', 'true')
+        const successUrl = successUrlObj.toString()
+
+        const cancelUrl = `${window.location.origin}${window.location.pathname}`
+
+        let referenceId = userId
+        const seats = targetPlan === 'team' ? CONSTANTS.INITIAL_TEAM_SEATS : undefined
+
+        if (targetPlan === 'team') {
+          const orgsResponse = await fetch('/api/organizations')
+          if (!orgsResponse.ok) {
+            throw new Error('Failed to check organization status')
+          }
+
+          const orgsData = await orgsResponse.json()
+          const existingOrg = orgsData.organizations?.find(
+            (org: any) => org.role === 'owner' || org.role === 'admin'
+          )
+
+          if (existingOrg) {
+            referenceId = existingOrg.id
+            try {
+              await client.organization.setActive({ organizationId: referenceId })
+            } catch (error) {
+              logger.warn('Failed to set organization as active for Tap upgrade', {
+                organizationId: referenceId,
+                error: error instanceof Error ? error.message : 'Unknown error',
+              })
+            }
+          } else if (orgsData.isMemberOfAnyOrg) {
+            throw new Error(
+              'You are already a member of an organization. Please leave it or ask an admin to upgrade.'
+            )
+          }
+        }
+
+        const res = await fetch('/api/billing/tap/subscription/upgrade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan: targetPlan,
+            referenceId,
+            seats,
+            successUrl,
+            cancelUrl,
+          }),
+        })
+
+        if (!res.ok) {
+          const errorPayload = await res.json().catch(() => ({}))
+          throw new Error(errorPayload?.error || 'Failed to initiate Tap payment')
+        }
+
+        const data = await res.json()
+        if (!data?.url || typeof data.url !== 'string') {
+          throw new Error('Tap payment initiated but no redirect URL was returned')
+        }
+
+        window.location.assign(data.url)
+        return
       }
 
       let currentSubscriptionId: string | undefined

@@ -16,8 +16,6 @@ const logger = createLogger('TapWebhook')
 type BillingBlockReason = 'payment_failed' | 'dispute'
 
 function getTapCurrencyDecimals(currency: string | undefined | null): number {
-  // Tap uses standard decimal rules based on ISO currency.
-  // Common 3-decimal currencies: BHD, JOD, KWD, OMR, TND.
   const c = (currency ?? '').toUpperCase()
   if (['BHD', 'JOD', 'KWD', 'OMR', 'TND'].includes(c)) return 3
   return 2
@@ -55,7 +53,6 @@ function computeTapWebhookHash(payload: any, secret: string): string {
 }
 
 function isTapChargeSuccessful(payload: any): boolean {
-  // Tap webhook examples use CAPTURED for successful charges.
   return payload?.status === 'CAPTURED'
 }
 
@@ -97,13 +94,11 @@ async function setProBillingBlocked(referenceId: string, blocked: boolean, reaso
 
 async function processTapPaymentSuccess(subscription: typeof subscriptionTable.$inferSelect) {
   if (subscription.plan === 'team') {
-    // Unblock the org members if we were previously blocked for payment_failed.
     await unblockOrgMembers(subscription.referenceId, 'payment_failed')
   } else {
     await setProBillingBlocked(subscription.referenceId, false, 'payment_failed')
   }
 
-  // Tap does not have a separate invoice-created webhook for us, so reset usage on captured charges.
   await resetUsageForSubscription({ plan: subscription.plan, referenceId: subscription.referenceId })
 }
 
@@ -115,12 +110,6 @@ async function processTapPaymentFailure(subscription: typeof subscriptionTable.$
   }
 }
 
-/**
- * Tap webhook endpoint
- * - Verifies webhook authenticity via the `hashstring` header.
- * - Creates/activates internal subscriptions on first successful charge.
- * - Updates usage limits on subsequent successful recurring charges.
- */
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json().catch(() => null)
@@ -148,18 +137,12 @@ export async function POST(request: NextRequest) {
 
     const { plan, referenceId, seats, provider } = getTapWebhookMetadata(payload)
     if (!plan || !referenceId || provider !== 'tap') {
-      // Not a Sim-generated Tap event we care about.
       return NextResponse.json({ received: true })
     }
 
     const isSuccess = isTapChargeSuccessful(payload)
     const { tapCustomerId, tapPaymentAgreementId } = getTapIdentifiers(payload)
 
-    // Handle threshold overage billing events (if overage Tap charges are configured with matching Tap metadata).
-    // Expected metadata convention:
-    // - udf1: 'overage_threshold_billing' | 'overage_threshold_billing_org'
-    // - udf2: userId | organizationId
-    // - udf3: 'tap'
     if (plan === 'overage_threshold_billing') {
       if (isSuccess) {
         await setProBillingBlocked(referenceId, false, 'payment_failed')
@@ -266,7 +249,6 @@ export async function POST(request: NextRequest) {
 
     const createdSubscription = inserted[0]
 
-    // Ensure org creation & membership for team plans.
     const resolvedSubscription = plan === 'team'
       ? await ensureOrganizationForTeamSubscription({
           id: createdSubscription.id,
