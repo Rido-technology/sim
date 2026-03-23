@@ -8,6 +8,7 @@ import { calculateSubscriptionOverage, getPlanPricing } from '@/lib/billing/core
 import { getHighestPrioritySubscription } from '@/lib/billing/core/subscription'
 import { requireStripeClient } from '@/lib/billing/stripe-client'
 import { env } from '@/lib/core/config/env'
+import { checkAndBillTapOrganizationOverageThreshold, checkAndBillTapOverageThreshold } from '@/lib/billing/tap/overage/threshold-billing'
 
 const logger = createLogger('ThresholdBilling')
 
@@ -120,7 +121,16 @@ export async function checkAndBillOverageThreshold(userId: string): Promise<void
         userId,
         organizationId: userSubscription.referenceId,
       })
-      await checkAndBillOrganizationOverageThreshold(userSubscription.referenceId)
+      if (userSubscription.paymentProvider === 'tap') {
+        await checkAndBillTapOrganizationOverageThreshold(userSubscription.referenceId)
+      } else {
+        await checkAndBillOrganizationOverageThreshold(userSubscription.referenceId)
+      }
+      return
+    }
+
+    if (userSubscription.paymentProvider === 'tap') {
+      await checkAndBillTapOverageThreshold(userId)
       return
     }
 
@@ -301,6 +311,7 @@ export async function checkAndBillOrganizationOverageThreshold(
       plan: orgSubscription.plan,
       seats: orgSubscription.seats,
       stripeSubscriptionId: orgSubscription.stripeSubscriptionId,
+      paymentProvider: orgSubscription.paymentProvider,
     })
 
     if (orgSubscription.plan !== 'team') {
@@ -308,6 +319,11 @@ export async function checkAndBillOrganizationOverageThreshold(
         organizationId,
         plan: orgSubscription.plan,
       })
+      return
+    }
+
+    if (orgSubscription.paymentProvider === 'tap') {
+      await checkAndBillTapOrganizationOverageThreshold(organizationId)
       return
     }
 
