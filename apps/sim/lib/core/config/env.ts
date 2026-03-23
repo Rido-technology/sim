@@ -59,6 +59,9 @@ export const env = createEnv({
     ENTERPRISE_STORAGE_LIMIT_GB:           z.number().optional().default(500),     // Default storage limit in GB for enterprise tier (can be overridden per org)
     BILLING_ENABLED:                       z.boolean().optional(),                 // Enable billing enforcement and usage tracking
     OVERAGE_THRESHOLD_DOLLARS:             z.number().optional().default(50),      // Dollar threshold for incremental overage billing (default: $50)
+    TAP_MERCHANT_SECRET_KEY:              z.string().min(1).optional(),            // Tap Loop Merchant secret key (used for charges + webhook hash validation)
+    TAP_ECOMMERCE_SECRET_KEY:             z.string().min(1).optional(),            // Tap Loop E-Commerce secret key (used for managing merchant/operator resources)
+    TAP_API_BASE_URL:                    z.string().url().optional(),            // Tap API base URL (defaults to https://api.tap.company)
 
     // Email & Communication
     EMAIL_VERIFICATION_ENABLED:            z.boolean().optional(),                 // Enable email verification for user registration and login (defaults to false)
