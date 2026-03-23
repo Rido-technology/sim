@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createLogger } from '@sim/logger'
 import { Info } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import { Combobox, Label, Switch, Tooltip } from '@/components/emcn'
 import { Skeleton } from '@/components/ui'
@@ -50,6 +51,7 @@ const CONSTANTS = {
 } as const
 
 type TargetPlan = 'pro' | 'team'
+type PaymentProviderId = 'stripe' | 'tap'
 
 interface WorkspaceAdmin {
   userId: string
@@ -174,6 +176,32 @@ export function Subscription() {
   const userPermissions = useUserPermissionsContext()
   const canManageWorkspaceKeys = userPermissions.canAdmin
   const logger = createLogger('Subscription')
+
+  const {
+    data: billingProviders,
+    isLoading: isLoadingBillingProviders,
+  } = useQuery({
+    queryKey: ['billing', 'providers'],
+    queryFn: async () => {
+      const res = await fetch('/api/billing/providers')
+      if (!res.ok) throw new Error('Failed to fetch billing providers')
+      return res.json() as Promise<{
+        availableProviders: PaymentProviderId[]
+        defaultProvider: PaymentProviderId | null
+      }>
+    },
+    staleTime: 60 * 1000,
+  })
+
+  const [selectedPaymentProvider, setSelectedPaymentProvider] = useState<PaymentProviderId>('stripe')
+
+  useEffect(() => {
+    if (!billingProviders) return
+    if (!billingProviders.availableProviders.includes(selectedPaymentProvider)) {
+      const nextProvider = billingProviders.defaultProvider || 'stripe'
+      setSelectedPaymentProvider(nextProvider)
+    }
+  }, [billingProviders, selectedPaymentProvider])
 
   const {
     data: subscriptionData,
@@ -322,12 +350,12 @@ export function Subscription() {
   const handleUpgradeWithErrorHandling = useCallback(
     async (targetPlan: TargetPlan) => {
       try {
-        await handleUpgrade(targetPlan)
+        await handleUpgrade(targetPlan, selectedPaymentProvider)
       } catch (error) {
         alert(error instanceof Error ? error.message : 'Unknown error occurred')
       }
     },
-    [handleUpgrade]
+    [handleUpgrade, selectedPaymentProvider]
   )
 
   const handleBadgeClick = useCallback(async () => {
@@ -508,6 +536,38 @@ export function Subscription() {
       {/* Upgrade Plans */}
       {permissions.showUpgradePlans && (
         <div className='flex flex-col gap-[10px]'>
+          {billingProviders?.availableProviders.includes('stripe') &&
+            billingProviders?.availableProviders.includes('tap') && (
+              <div
+                className='flex items-center justify-between gap-[12px] rounded-[6px] border border-[var(--border-1)] px-[12px] py-[10px]'
+                aria-busy={isLoadingBillingProviders}
+              >
+                <div className='flex flex-col gap-[2px]'>
+                  <Label htmlFor='payment-provider'>Payment provider</Label>
+                  <span className='text-[12px] text-[var(--text-secondary)]'>
+                    Choose how to pay for this upgrade
+                  </span>
+                </div>
+                <div className='w-[200px]'>
+                  <Combobox
+                    size='sm'
+                    align='end'
+                    dropdownWidth={200}
+                    value={selectedPaymentProvider}
+                    onChange={(value: string) =>
+                      setSelectedPaymentProvider(value as PaymentProviderId)
+                    }
+                    placeholder='Select provider'
+                    options={[
+                      { label: 'Stripe', value: 'stripe' },
+                      { label: 'Tap', value: 'tap' },
+                    ]}
+                    disabled={isLoadingBillingProviders}
+                  />
+                </div>
+              </div>
+            )}
+
           {/* Render plans based on what should be visible */}
           {(() => {
             const hasEnterprise = visiblePlans.includes('enterprise')
@@ -576,6 +636,7 @@ export function Subscription() {
             plan: subscription.plan,
             status: subscription.status,
             isPaid: subscription.isPaid,
+            paymentProvider: (subscriptionData?.data?.paymentProvider as 'stripe' | 'tap') ?? 'stripe',
           }}
           subscriptionData={{
             periodEnd: subscriptionData?.data?.periodEnd || null,
