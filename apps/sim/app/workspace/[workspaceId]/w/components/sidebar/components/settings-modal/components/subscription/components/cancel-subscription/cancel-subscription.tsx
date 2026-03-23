@@ -37,6 +37,7 @@ interface CancelSubscriptionProps {
     plan: string
     status: string | null
     isPaid: boolean
+    paymentProvider?: 'stripe' | 'tap'
   }
   subscriptionData?: {
     periodEnd?: Date | null
@@ -80,6 +81,7 @@ export function CancelSubscription({ subscription, subscriptionData }: CancelSub
     setError(null)
 
     try {
+      const isTapProvider = subscription.paymentProvider === 'tap'
       const subscriptionStatus = currentSubscriptionStatus
       const activeOrgId = activeOrganization?.id
 
@@ -98,25 +100,47 @@ export function CancelSubscription({ subscription, subscriptionData }: CancelSub
         activeOrgId,
       })
 
-      if (!betterAuthSubscription.cancel) {
-        throw new Error('Subscription management not available')
-      }
+      if (isTapProvider) {
+        const response = await fetch('/api/billing/tap/subscription/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            referenceId,
+            ...(subscriptionId && { subscriptionId }),
+          }),
+        })
 
-      const returnUrl = getBaseUrl() + window.location.pathname.split('/w/')[0]
+        if (!response.ok) {
+          const errPayload = await response.json().catch(() => ({}))
+          throw new Error(errPayload?.error || 'Failed to cancel Tap subscription')
+        }
 
-      const cancelParams: SubscriptionCancelParams = {
-        returnUrl,
-        referenceId,
-        ...(subscriptionId && { subscriptionId }),
-      }
-
-      const result = await betterAuthSubscription.cancel(cancelParams)
-
-      if (result && 'error' in result && result.error) {
-        setError(result.error.message || 'Failed to cancel subscription')
-        logger.error('Failed to cancel subscription via Better Auth', { error: result.error })
+        queryClient.invalidateQueries({ queryKey: subscriptionKeys.all })
+        if (activeOrgId) {
+          queryClient.invalidateQueries({ queryKey: organizationKeys.detail(activeOrgId) })
+          queryClient.invalidateQueries({ queryKey: organizationKeys.billing(activeOrgId) })
+        }
       } else {
-        logger.info('Redirecting to Stripe Billing Portal for cancellation')
+        if (!betterAuthSubscription.cancel) {
+          throw new Error('Subscription management not available')
+        }
+
+        const returnUrl = getBaseUrl() + window.location.pathname.split('/w/')[0]
+
+        const cancelParams: SubscriptionCancelParams = {
+          returnUrl,
+          referenceId,
+          ...(subscriptionId && { subscriptionId }),
+        }
+
+        const result = await betterAuthSubscription.cancel(cancelParams)
+
+        if (result && 'error' in result && result.error) {
+          setError(result.error.message || 'Failed to cancel subscription')
+          logger.error('Failed to cancel subscription via Better Auth', { error: result.error })
+        } else {
+          logger.info('Redirecting to Stripe Billing Portal for cancellation')
+        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to cancel subscription'
@@ -134,14 +158,11 @@ export function CancelSubscription({ subscription, subscriptionData }: CancelSub
     setError(null)
 
     try {
+      const isTapProvider = subscription.paymentProvider === 'tap'
       const subscriptionStatus = currentSubscriptionStatus
       const activeOrgId = activeOrganization?.id
 
       if (isCancelAtPeriodEnd) {
-        if (!betterAuthSubscription.restore) {
-          throw new Error('Subscription restore not available')
-        }
-
         let referenceId: string
         let subscriptionId: string | undefined
 
@@ -153,16 +174,36 @@ export function CancelSubscription({ subscription, subscriptionData }: CancelSub
           subscriptionId = undefined
         }
 
-        logger.info('Restoring subscription', { referenceId, subscriptionId })
+        if (isTapProvider) {
+          const response = await fetch('/api/billing/tap/subscription/restore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              referenceId,
+              ...(subscriptionId && { subscriptionId }),
+            }),
+          })
 
-        const restoreParams: SubscriptionRestoreParams = {
-          referenceId,
-          ...(subscriptionId && { subscriptionId }),
+          if (!response.ok) {
+            const errPayload = await response.json().catch(() => ({}))
+            throw new Error(errPayload?.error || 'Failed to restore Tap subscription')
+          }
+        } else {
+          if (!betterAuthSubscription.restore) {
+            throw new Error('Subscription restore not available')
+          }
+
+          logger.info('Restoring subscription', { referenceId, subscriptionId })
+
+          const restoreParams: SubscriptionRestoreParams = {
+            referenceId,
+            ...(subscriptionId && { subscriptionId }),
+          }
+
+          const result = await betterAuthSubscription.restore(restoreParams)
+
+          logger.info('Subscription restored successfully', result)
         }
-
-        const result = await betterAuthSubscription.restore(restoreParams)
-
-        logger.info('Subscription restored successfully', result)
       }
 
       await Promise.all([
@@ -247,7 +288,7 @@ export function CancelSubscription({ subscription, subscriptionData }: CancelSub
             <p className='text-[12px] text-[var(--text-secondary)]'>
               {isCancelAtPeriodEnd
                 ? 'Your subscription is set to cancel at the end of the billing period. Would you like to keep your subscription active?'
-                : `You'll be redirected to Stripe to manage your subscription. You'll keep access until ${formatDate(
+                : `You'll be redirected to Stripe or Tap to manage your subscription. You'll keep access until ${formatDate(
                     periodEndDate
                   )}, then downgrade to free plan. You can restore your subscription at any time.`}
             </p>
