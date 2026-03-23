@@ -288,7 +288,11 @@ export function UsageIndicator({ onClick }: UsageIndicatorProps) {
 
   const handleUpgradeToPro = useCallback(async () => {
     try {
-      await handleUpgrade('pro')
+      const res = await fetch('/api/billing/providers')
+      const body = await res.json().catch(() => ({}))
+      const provider = (body?.defaultProvider ?? 'stripe') as 'stripe' | 'tap'
+
+      await handleUpgrade('pro', provider)
     } catch (error) {
       logger.error('Failed to upgrade to Pro', { error })
     }
@@ -296,7 +300,11 @@ export function UsageIndicator({ onClick }: UsageIndicatorProps) {
 
   const handleUpgradeToTeam = useCallback(async () => {
     try {
-      await handleUpgrade('team')
+      const res = await fetch('/api/billing/providers')
+      const body = await res.json().catch(() => ({}))
+      const provider = (body?.defaultProvider ?? 'stripe') as 'stripe' | 'tap'
+
+      await handleUpgrade('team', provider)
     } catch (error) {
       logger.error('Failed to upgrade to Team', { error })
     }
