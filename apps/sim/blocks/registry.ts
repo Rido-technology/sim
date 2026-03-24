@@ -69,6 +69,7 @@ import { IntercomBlock, IntercomV2Block } from '@/blocks/blocks/intercom'
 import { JinaBlock } from '@/blocks/blocks/jina'
 import { JiraBlock } from '@/blocks/blocks/jira'
 import { JiraServiceManagementBlock } from '@/blocks/blocks/jira_service_management'
+import { JsonHelperBlock } from '@/blocks/blocks/json_helper'
 import { KalshiBlock, KalshiV2Block } from '@/blocks/blocks/kalshi'
 import { KnowledgeBlock } from '@/blocks/blocks/knowledge'
 import { LangsmithBlock } from '@/blocks/blocks/langsmith'
@@ -146,6 +147,7 @@ import { SupabaseBlock } from '@/blocks/blocks/supabase'
 import { TavilyBlock } from '@/blocks/blocks/tavily'
 import { TelegramBlock } from '@/blocks/blocks/telegram'
 import { TextHelperBlock } from '@/blocks/blocks/text_helper'
+import { TextSummarizerBlock } from '@/blocks/blocks/text-summarizer'
 import { TextractBlock, TextractV2Block } from '@/blocks/blocks/textract'
 import { ThinkingBlock } from '@/blocks/blocks/thinking'
 import { TinybirdBlock } from '@/blocks/blocks/tinybird'
@@ -260,6 +262,7 @@ export const registry: Record<string, BlockConfig> = {
   jina: JinaBlock,
   jira: JiraBlock,
   jira_service_management: JiraServiceManagementBlock,
+  json_helper: JsonHelperBlock,
   kalshi: KalshiBlock,
   kalshi_v2: KalshiV2Block,
   knowledge: KnowledgeBlock,
@@ -342,6 +345,7 @@ export const registry: Record<string, BlockConfig> = {
   tavily: TavilyBlock,
   telegram: TelegramBlock,
   text_helper: TextHelperBlock,
+  text_summarizer: TextSummarizerBlock,
   textract: TextractBlock,
   textract_v2: TextractV2Block,
   thinking: ThinkingBlock,

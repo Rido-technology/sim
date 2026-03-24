@@ -1,3 +1,21 @@
+export function TextSummarizerIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="2" />
+      <line x1="7" y1="8" x2="17" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="7" y1="16" x2="13" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M19 20c-1.5-2-4.5-2-6 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 import type { SVGProps } from "react";
 import { useId } from "react";
 
@@ -3266,12 +3284,12 @@ export function MicrosoftOneNoteIcon(props: SVGProps<SVGSVGElement>) {
     {...props}
     viewBox="0 0 32 32" fill="none" 
     xmlns="http://www.w3.org/2000/svg">
-      <g id="SVGRepo_bgCarrier" strokewidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokelinecap="round"
-       strokelinejoin="round"></g><g id="SVGRepo_iconCarrier">
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+       strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier">
          <path d="M8 23H32V28C32 29.1046 31.1046 30 30 30H10C8.89543 30 8 29.1046 8 28V23Z" fill="#5D29A1"></path> <rect x="8" y="16" width="24" height="7" fill="#7F32CC"></rect> <rect x="8" y="9" width="24"
           height="7" fill="#9A40D6"></rect> 
-          <path d="M10 2C8.89543 2 8 2.89543 8 4V28C8 29.1046 8.89543 30 10 30H24V9H32V4C32 2.89543 31.1046 2 30 2H10Z" fill="url(#paint0_linear_87_7733)"></path> <path d="M8 12C8 10.3431 9.34315 9 11 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H8V12Z" fill="#000000" fillopacity="0.3"></path> 
+          <path d="M10 2C8.89543 2 8 2.89543 8 4V28C8 29.1046 8.89543 30 10 30H24V9H32V4C32 2.89543 31.1046 2 30 2H10Z" fill="url(#paint0_linear_87_7733)"></path> <path d="M8 12C8 10.3431 9.34315 9 11 9H17C18.6569 9 20 10.3431 20 12V24C20 25.6569 18.6569 27 17 27H8V12Z" fill="#000000" fillOpacity="0.3"></path> 
           <rect y="7" width="18" height="18"
            rx="2" fill="url(#paint1_linear_87_7733)"></rect>
             <path d="M13 21V11H10.8893V16.8286L6.9631 11H5V21H7.08118V14.9571L11.155 21H13Z" fill="white"></path> <defs> <linearGradient id="paint0_linear_87_7733" x1="8" y1="16" x2="24.5" y2="16" gradientUnits="userSpaceOnUse"> <stop stopColor="#8C42AC"></stop>
@@ -6193,6 +6211,40 @@ export function DateHelperIcon(props: SVGProps<SVGSVGElement>) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function JsonHelperIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      width="30"
+      height="30"
+      viewBox="0 0 30 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7 3C5.34315 3 4 4.34315 4 6V24C4 25.6569 5.34315 27 7 27H23C24.6569 27 26 25.6569 26 24V6C26 4.34315 24.6569 3 23 3H7Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 10L13 15L10 20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 20H20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
     </svg>
   );

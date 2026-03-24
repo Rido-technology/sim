@@ -12,12 +12,14 @@ import { EvaluatorBlockHandler } from '@/executor/handlers/evaluator/evaluator-h
 import { FunctionBlockHandler } from '@/executor/handlers/function/function-handler'
 import { GenericBlockHandler } from '@/executor/handlers/generic/generic-handler'
 import { HumanInTheLoopBlockHandler } from '@/executor/handlers/human-in-the-loop/human-in-the-loop-handler'
+
 import { ResponseBlockHandler } from '@/executor/handlers/response/response-handler'
 import { RouterBlockHandler } from '@/executor/handlers/router/router-handler'
 import { TriggerBlockHandler } from '@/executor/handlers/trigger/trigger-handler'
 import { VariablesBlockHandler } from '@/executor/handlers/variables/variables-handler'
 import { WaitBlockHandler } from '@/executor/handlers/wait/wait-handler'
 import { WorkflowBlockHandler } from '@/executor/handlers/workflow/workflow-handler'
+import { TextSummarizerBlockHandler } from '@/executor/handlers/text-summarizer/text-summarizer-handler'
 import type { BlockHandler } from '@/executor/types'
 
 /**
@@ -27,6 +29,7 @@ import type { BlockHandler } from '@/executor/types'
  * by NodeExecutionOrchestrator, not user blocks.
  */
 export function createBlockHandlers(): BlockHandler[] {
+  
   return [
     new TriggerBlockHandler(),
     new FunctionBlockHandler(),
@@ -36,6 +39,7 @@ export function createBlockHandlers(): BlockHandler[] {
     new ResponseBlockHandler(),
     new HumanInTheLoopBlockHandler(),
     new AgentBlockHandler(),
+    new TextSummarizerBlockHandler(),
     new VariablesBlockHandler(),
     new WorkflowBlockHandler(),
     new WaitBlockHandler(),

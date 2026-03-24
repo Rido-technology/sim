@@ -126,7 +126,7 @@ export function migrateAgentBlocksToMessagesFormat(
 ): Record<string, BlockState> {
   return Object.fromEntries(
     Object.entries(blocks).map(([id, block]) => {
-      if (block.type === 'agent') {
+      if (block.type === 'agent' ) {
         const systemPrompt = block.subBlocks.systemPrompt?.value
         const userPrompt = block.subBlocks.userPrompt?.value
         const messages = block.subBlocks.messages?.value

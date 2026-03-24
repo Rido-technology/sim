@@ -50,19 +50,6 @@ async function executeChatCompletionsRequest(
   azureApiVersion: string,
   deploymentName: string
 ): Promise<ProviderResponse | StreamingExecution> {
-  logger.info('Using Azure OpenAI Chat Completions API', {
-    model: request.model,
-    endpoint: azureEndpoint,
-    deploymentName,
-    apiVersion: azureApiVersion,
-    hasSystemPrompt: !!request.systemPrompt,
-    hasMessages: !!request.messages?.length,
-    hasTools: !!request.tools?.length,
-    toolCount: request.tools?.length || 0,
-    hasResponseFormat: !!request.responseFormat,
-    stream: !!request.stream,
-  })
-
   const azureOpenAI = new AzureOpenAI({
     apiKey: request.apiKey,
     apiVersion: azureApiVersion,
@@ -597,6 +584,7 @@ export const azureOpenAIProvider: ProviderConfig = {
   models: getProviderModels('azure-openai'),
   defaultModel: getProviderDefaultModel('azure-openai'),
 
+
   executeRequest: async (
     request: ProviderRequest
   ): Promise<ProviderResponse | StreamingExecution> => {
@@ -611,6 +599,14 @@ export const azureOpenAIProvider: ProviderConfig = {
     if (!request.apiKey) {
       throw new Error('API key is required for Azure OpenAI')
     }
+
+    // Log Azure OpenAI config 
+    logger.info('Azure OpenAI config loaded', {
+      endpoint: azureEndpoint,
+      model: request.model,
+      azureApiVersion: request.azureApiVersion,
+      apikey: request.apiKey
+    })
 
     // Check if the endpoint is a full chat completions URL
     if (isChatCompletionsEndpoint(azureEndpoint)) {
@@ -629,7 +625,7 @@ export const azureOpenAIProvider: ProviderConfig = {
         urlApiVersion ||
         request.azureApiVersion ||
         env.AZURE_OPENAI_API_VERSION ||
-        '2024-07-01-preview'
+        ""
 
       logger.info('Chat completions configuration:', {
         originalEndpoint: azureEndpoint,
@@ -665,7 +661,7 @@ export const azureOpenAIProvider: ProviderConfig = {
     // Default: base URL provided, construct the responses API URL
     logger.info('Using base endpoint, constructing Responses API URL')
     const azureApiVersion =
-      request.azureApiVersion || env.AZURE_OPENAI_API_VERSION || '2024-07-01-preview'
+      request.azureApiVersion || env.AZURE_OPENAI_API_VERSION 
     const deploymentName = request.model.replace('azure/', '')
     // const apiUrl = `${azureEndpoint.replace(/\/$/, '')}/openai/v1/responses?api-version=${azureApiVersion}`
     const baseUrl = azureEndpoint.replace(/\/$/, '');
